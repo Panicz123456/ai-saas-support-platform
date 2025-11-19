@@ -1,8 +1,9 @@
+import { ClerkProvider } from "@clerk/nextjs";
 import { Geist, Geist_Mono } from "next/font/google"
 
-import "@workspace/ui/globals.css"
-import { ClerkProvider } from "@clerk/nextjs";
 import ConvexClientProvider from "@/components/ConvexClientProvider";
+
+import "@workspace/ui/globals.css"
 
 const fontSans = Geist({
   subsets: ["latin"],
