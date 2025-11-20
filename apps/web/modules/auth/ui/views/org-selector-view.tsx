@@ -2,11 +2,11 @@ import { OrganizationList } from "@clerk/nextjs"
 
 export const OrgSelectorView = () => { 
   return (
-    <OrganizationList
-      afterCreateOrganizationUrl="/"
-      afterSelectOrganizationUrl="/"
-      skipInvitationScreen
-      hidePersonal
-    />
-  )
+		<OrganizationList
+			afterCreateOrganizationUrl="/"
+			afterSelectOrganizationUrl="/"
+			hidePersonal
+			skipInvitationScreen
+		/>
+	);
 }
