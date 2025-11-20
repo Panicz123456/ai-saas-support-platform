@@ -1,36 +1,36 @@
-import { ClerkProvider } from "@clerk/nextjs";
-import { Geist, Geist_Mono } from "next/font/google"
+import { ClerkProvider } from '@clerk/nextjs';
+import { Geist, Geist_Mono } from 'next/font/google';
 
-import ConvexClientProvider from "@/components/ConvexClientProvider";
-
-import "@workspace/ui/globals.css"
+import '@workspace/ui/globals.css';
+import { Toaster } from '@workspace/ui/components/sonner';
+import ConvexClientProvider from '@/components/ConvexClientProvider';
 
 const fontSans = Geist({
-  subsets: ["latin"],
-  variable: "--font-sans",
-})
+	subsets: ['latin'],
+	variable: '--font-sans',
+});
 
 const fontMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-})
+	subsets: ['latin'],
+	variable: '--font-mono',
+});
 
 export default function RootLayout({
-  children,
+	children,
 }: Readonly<{
-  children: React.ReactNode
+	children: React.ReactNode;
 }>) {
-  return (
-    <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${fontSans.variable} ${fontMono.variable} font-sans antialiased `}
-      >
-        <ClerkProvider>
-          <ConvexClientProvider>
-            {children}
-          </ConvexClientProvider>
-        </ClerkProvider>
-      </body>
-    </html>
-  );
+	return (
+		<html lang="en" suppressHydrationWarning>
+			<body
+				className={`${fontSans.variable} ${fontMono.variable} font-sans antialiased `}
+			>
+				<ClerkProvider>
+					<ConvexClientProvider>
+						{children}
+					</ConvexClientProvider>
+				</ClerkProvider>
+			</body>
+		</html>
+	);
 }
