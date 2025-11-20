@@ -1,6 +1,18 @@
 'use client';
 
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { OrganizationSwitcher, UserButton } from '@clerk/nextjs';
+import {
+	CreditCardIcon,
+	InboxIcon,
+	LayoutDashboardIcon,
+	LibraryBigIcon,
+	PaletteIcon,
+	Mic,
+} from 'lucide-react';
+
+import { cn } from '@workspace/ui/lib/utils';
 import {
 	Sidebar,
 	SidebarContent,
@@ -14,16 +26,6 @@ import {
 	SidebarMenuItem,
 	SidebarRail,
 } from '@workspace/ui/components/sidebar';
-import {
-	CreditCardIcon,
-	InboxIcon,
-	LayoutDashboardIcon,
-	LibraryBigIcon,
-	PaletteIcon,
-	Mic,
-} from 'lucide-react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 
 const customerSupportsItems = [
 	{
@@ -113,6 +115,10 @@ export const DashboardSidebar = () => {
 								<SidebarMenuItem key={item.title}>
 									<SidebarMenuButton
 										asChild
+										className={cn(
+											isActive(item.url) &&
+												'bg-gradient-to-b from-sidebar-primary to-[#0b63f3]! text-sidebar-primary-foreground! hover:to-[#0b63f3]/90!'
+										)}
 										isActive={isActive(item.url)}
 										tooltip={item.title}
 									>
@@ -136,6 +142,10 @@ export const DashboardSidebar = () => {
 								<SidebarMenuItem key={item.title}>
 									<SidebarMenuButton
 										asChild
+										className={cn(
+											isActive(item.url) &&
+												'bg-gradient-to-b from-sidebar-primary to-[#0b63f3]! text-sidebar-primary-foreground! hover:to-[#0b63f3]/90!'
+										)}
 										isActive={isActive(item.url)}
 										tooltip={item.title}
 									>
@@ -159,6 +169,10 @@ export const DashboardSidebar = () => {
 								<SidebarMenuItem key={item.title}>
 									<SidebarMenuButton
 										asChild
+										className={cn(
+											isActive(item.url) &&
+												'bg-gradient-to-b from-sidebar-primary to-[#0b63f3]! text-sidebar-primary-foreground! hover:to-[#0b63f3]/90!'
+										)}
 										isActive={isActive(item.url)}
 										tooltip={item.title}
 									>
@@ -186,8 +200,8 @@ export const DashboardSidebar = () => {
 									userButtonBox:
 										'w-full! flex-row-reverse! justify-end! gap-2! group-data-[collapsible=icon]:justify-center! text-sidebar-foreground!',
 									userButtonOuterIdentifier:
-                    'pl-0! group-data-[collapsible=icon]:hidden!',
-                  avatarBox: "size-4!"
+										'pl-0! group-data-[collapsible=icon]:hidden!',
+									avatarBox: 'size-4!',
 								},
 							}}
 						/>
