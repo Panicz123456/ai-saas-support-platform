@@ -2,7 +2,6 @@ import { ClerkProvider } from '@clerk/nextjs';
 import { Geist, Geist_Mono } from 'next/font/google';
 
 import '@workspace/ui/globals.css';
-import { Toaster } from '@workspace/ui/components/sonner';
 import ConvexClientProvider from '@/components/ConvexClientProvider';
 
 const fontSans = Geist({
