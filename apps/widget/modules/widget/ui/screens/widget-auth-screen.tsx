@@ -1,10 +1,12 @@
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'convex/react';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { api } from '@workspace/backend/_generated/api'
 import { Input } from '@workspace/ui/components/input';
 import { Button } from '@workspace/ui/components/button';
+import { Doc } from '@workspace/backend/_generated/dataModel';
 import {
 	Form,
 	FormControl,
@@ -15,12 +17,12 @@ import {
 
 import { WidgetHeader } from '@/modules/widget/ui/components/widget-header';
 import { formSchema, formSchemaType } from '@/modules/widget/ui/schema';
-import { Doc } from '@workspace/backend/_generated/dataModel';
-
-// TODO: TEST
-const organizationId=  "123"
+import { contactSessionIdAtomFamily, organizationIdAtom } from '@/modules/widget/atoms/widget-atoms';
 
 export const WidgetAuthScreen = () => {
+	const organizationId = useAtomValue(organizationIdAtom)
+	const setContactSessionId = useSetAtom(contactSessionIdAtomFamily(organizationId || "")) 
+
 	const form = useForm<formSchemaType>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -56,7 +58,8 @@ export const WidgetAuthScreen = () => {
 			metadata,
 			organizationId
 		})
-		console.log({ contactSessionId })
+
+		setContactSessionId(contactSessionId)
 	};
 
 	return (
