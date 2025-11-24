@@ -43,7 +43,7 @@ export const WidgetLoadingScreen = ({
 			return;
 		}
 
-		setLoadingMessage('Loading organization...');
+		setLoadingMessage('Loading organization ID...');
 
 		if (!organizationId) {
 			setErrorMessage('Oraganization ID is required');
