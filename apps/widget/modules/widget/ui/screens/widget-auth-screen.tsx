@@ -16,15 +16,15 @@ import {
 } from '@workspace/ui/components/form';
 
 import { WidgetHeader } from '@/modules/widget/ui/components/widget-header';
-import { formSchema, formSchemaType } from '@/modules/widget/ui/schema';
+import { authFormSchema, authFormSchemaType } from '@/modules/widget/ui/schema';
 import { contactSessionIdAtomFamily, organizationIdAtom } from '@/modules/widget/atoms/widget-atoms';
 
 export const WidgetAuthScreen = () => {
 	const organizationId = useAtomValue(organizationIdAtom)
 	const setContactSessionId = useSetAtom(contactSessionIdAtomFamily(organizationId || "")) 
 
-	const form = useForm<formSchemaType>({
-		resolver: zodResolver(formSchema),
+	const form = useForm<authFormSchemaType>({
+		resolver: zodResolver(authFormSchema),
 		defaultValues: {
 			name: '',
 			email: '',
@@ -33,15 +33,15 @@ export const WidgetAuthScreen = () => {
 
 	const createContactSession = useMutation(api.public.contactSessions.create)
 
-	const onSubmit = async (values: formSchemaType) => {
-		if (!organizationId) { 
+	const onSubmit = async (values: authFormSchemaType) => {
+		if (!organizationId) {
 			return;
 		}
 
-		const metadata: Doc<"contactSession">["metadata"] = {
+		const metadata: Doc<'contactSession'>['metadata'] = {
 			userAgent: navigator.userAgent,
 			language: navigator.language,
-			languages: navigator.languages?.join(","),
+			languages: navigator.languages?.join(','),
 			platform: navigator.platform,
 			vendor: navigator.vendor,
 			screenResolution: `${screen.width}x${screen.height}`,
@@ -49,17 +49,17 @@ export const WidgetAuthScreen = () => {
 			timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
 			timezoneOffset: new Date().getTimezoneOffset(),
 			cookieEnabled: navigator.cookieEnabled,
-			referrer: document.referrer || "direct",
-			currentUrl: window.location.href
+			referrer: document.referrer || 'direct',
+			currentUrl: window.location.href,
 		};
 
-		const contactSessionId = await createContactSession({ 
+		const contactSessionId = await createContactSession({
 			...values,
 			metadata,
-			organizationId
-		})
+			organizationId,
+		});
 
-		setContactSessionId(contactSessionId)
+		setContactSessionId(contactSessionId);
 	};
 
 	return (
