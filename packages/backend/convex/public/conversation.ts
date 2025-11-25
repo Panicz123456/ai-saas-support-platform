@@ -1,5 +1,9 @@
-import { mutation, query } from '../_generated/server';
 import { ConvexError, v } from 'convex/values';
+
+import { mutation, query } from '../_generated/server';
+import { supportAgent } from '../system/ai/agents/supportAgent';
+import { saveMessage } from '@convex-dev/agent';
+import { components } from '../_generated/api';
 
 export const getOne = query({
 	args: {
@@ -11,14 +15,24 @@ export const getOne = query({
 		if (!session || session.expairedAt < Date.now()) { 
 			throw new ConvexError({ 
 				code: "UNAUTHORIZED",
-				message: "Invalid session"
+				message: "Invalid Session"
 			})
 		}
 
 		const conversation = await ctx.db.get(args.conversationId);
 
 		if (!conversation) { 
-			return null
+			throw new ConvexError({
+				code: 'UNAUTHORIZED',
+				message: 'Conversation not found',
+			});
+		}
+
+		if (conversation.contactSessionId !== session._id) { 
+			throw new ConvexError({
+				code: 'UNAUTHORIZED',
+				message: 'Incorrect Session',
+			});
 		}
 
 		return {  
@@ -41,17 +55,27 @@ export const create = mutation({
 				code: 'UNAUTHORIZED',
 				message: 'Invalid session',
 			});
-    }
+		}
+		
+		const { threadId } = await supportAgent.createThread(ctx, { 
+			userId: args.organizationId,
+		})
 
-    // TODO: Change later after convex agent to realt threadId
-    const threadId = "123"
-    
-    const conversationId = await ctx.db.insert("conversation", { 
-      contactSessionId: session._id,
-      status: "unresolved",
-      organizationId: args.organizationId,
-      threadId: threadId,
-    })
+		await saveMessage(ctx, components.agent, { 
+			threadId,
+			message: { 
+				role: "assistant",
+				// TODO: modify to widget setrtings inital message
+				content: "Hello, how can I help you today?"
+			}
+		})
+
+    const conversationId = await ctx.db.insert('conversation', {
+			contactSessionId: session._id,
+			status: 'unresolved',
+			organizationId: args.organizationId,
+			threadId,
+		});
 
     return conversationId
 	},
