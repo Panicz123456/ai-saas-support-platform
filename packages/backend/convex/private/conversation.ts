@@ -7,6 +7,60 @@ import { query } from '../_generated/server';
 
 import { supportAgent } from '../system/ai/agents/supportAgent';
 
+export const getOne = query({
+	args: {
+		conversationId: v.id('conversation'),
+	},
+	handler: async (ctx, args) => {
+		const identity = await ctx.auth.getUserIdentity();
+
+		if (identity === null) {
+			throw new ConvexError({
+				code: 'UNAUTHORIZED',
+				message: 'Unauthorized',
+			});
+		}
+
+		const orgId = identity.orgId as string;
+
+		if (!orgId) {
+			throw new ConvexError({
+				code: 'NOT_FOUND',
+				message: 'Organization Id not found',
+			});
+		}
+
+		const conversation = await ctx.db.get(args.conversationId);
+
+		if (!conversation) {
+			throw new ConvexError({
+				code: 'NOT_FOUND',
+				message: 'Conversation not found',
+			});
+		}
+		if (conversation?.organizationId !== orgId) {
+			throw new ConvexError({
+				code: 'UNAUTHORIZED',
+				message: 'Invalid organization id',
+			});
+		}
+
+		const contactSession = await ctx.db.get(conversation.contactSessionId)
+
+		if (!contactSession) { 
+			throw new ConvexError({ 
+				code: "NOT_FOUND",
+				message: "Contact session not found"
+			})
+		}
+
+		return {
+			...conversation,
+			contactSession,
+		};
+	},
+});
+
 export const getMany = query({
 	args: {
 		paginationOpts: paginationOptsValidator,
@@ -58,39 +112,40 @@ export const getMany = query({
 		}
 
 		const conversationWirhAdditionalData = await Promise.all(
-			conversation.page.map(async (conversation) => { 
-				let lastMessage: MessageDoc | null = null
+			conversation.page.map(async (conversation) => {
+				let lastMessage: MessageDoc | null = null;
 
-				const contactSession = await ctx.db.get(conversation.contactSessionId)
+				const contactSession = await ctx.db.get(conversation.contactSessionId);
 
-				if (!contactSession) { 
-					return null
+				if (!contactSession) {
+					return null;
 				}
 
-				const messages = await supportAgent.listMessages(ctx, { 
+				const messages = await supportAgent.listMessages(ctx, {
 					threadId: conversation.threadId,
-					paginationOpts: {numItems: 1, cursor: null},
-				})
+					paginationOpts: { numItems: 1, cursor: null },
+				});
 
-				if (messages.page.length > 0) { 
-					lastMessage = messages.page[0] ?? null
+				if (messages.page.length > 0) {
+					lastMessage = messages.page[0] ?? null;
 				}
 
 				return {
 					...conversation,
 					lastMessage,
 					contactSession,
-				}
+				};
 			})
-		)
+		);
 
 		const validConversation = conversationWirhAdditionalData.filter(
-			(conversation): conversation is NonNullable<typeof conversation> => conversation !== null
-		)
+			(conversation): conversation is NonNullable<typeof conversation> =>
+				conversation !== null
+		);
 
-		return { 
+		return {
 			...conversation,
-			page: validConversation
-		}
+			page: validConversation,
+		};
 	},
 });
