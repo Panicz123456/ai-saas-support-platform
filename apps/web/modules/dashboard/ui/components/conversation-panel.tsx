@@ -64,7 +64,7 @@ export const ConversationPanel = () => {
 			<div className="flex flex-col gap-3.5 border-b p-2">
 				<Select
 					defaultValue="all"
-					// Con't be Doc<"conversation">["status"]) becouse this dont get all values
+					// Can't be Doc<"conversation">["status"] because this doesn't get "all" value
 					onValueChange={(value) =>
 						setStatusFilter(
 							value as 'unresolved' | 'escalated' | 'resolved' | 'all'
@@ -121,10 +121,10 @@ export const ConversationPanel = () => {
 								: undefined;
 							return (
 								<Link
-									href={`/conversation/${conversation._id}`}
+									href={`/conversations/${conversation._id}`}
 									className={cn(
-										'relative flex coursor-pointer items-start gap-3 border-b p-4 py-5 text-sm leading-tight hover:bg-accent hover:text-accent',
-										pathname === `/conversation/${conversation._id}` &&
+										'relative flex coursor-pointer items-start gap-3 border-b p-4 py-5 text-sm leading-tight hover:bg-accent hover:text-accent-foreground',
+										pathname === `/conversations/${conversation._id}` &&
 											'bg-accent text-accent-foreground'
 									)}
 									key={conversation._id}
@@ -132,7 +132,7 @@ export const ConversationPanel = () => {
 									<div
 										className={cn(
 											'-translate-y-1/2 absolute top-1/2 left-0 h-[64%] w-1 rounded-r-full bg-neutral-300 opacity-0 transition-opacity',
-											pathname === `/conversation/${conversation._id}` &&
+											pathname === `/conversations/${conversation._id}` &&
 												'opacity-100'
 										)}
 									/>
@@ -145,7 +145,9 @@ export const ConversationPanel = () => {
 									/>
 									<div className="flex-1">
 										<div className="flex w-full items-center gap-2">
-											<span className="truncate font-bold">
+											<span
+												className="truncate font-bold hover:text-primary"
+											>
 												{conversation.contactSession.name}
 											</span>
 											<span className="ml-auto shrink-0 text-muted-foreground text-xs">
@@ -185,24 +187,21 @@ export const ConversationPanel = () => {
 	);
 };
 
-export const SkeletonConversationsPanel = () => { 
+export const SkeletonConversationsPanel = () => {
 	return (
-		<div className='flex min-h-0 flex-1 flex-col gap-2 overflow-auto'>
-			<div className='relative flex w-full min-w-0 flex-col p-2'>
-				<div className='w-full space-y-2'>
-					{Array.from({ length: 8 }).map((_, index) => ( 
-						<div
-							className='flex items-start gap-3 rounded-lg p-4'
-							key={index}
-						>
-							<Skeleton className='h-10 w-10 shrink-0 rounded-full' />
-							<div className='min-w-0 flex-1'>
-								<div className='flex w-full items-center gap-2'>
-									<Skeleton className='h-4 w-24' />
-									<Skeleton className='ml-auto h-3 w-12 shrink-0' />
+		<div className="flex min-h-0 flex-1 flex-col gap-2 overflow-auto">
+			<div className="relative flex w-full min-w-0 flex-col p-2">
+				<div className="w-full space-y-2">
+					{Array.from({ length: 8 }).map((_, index) => (
+						<div className="flex items-start gap-3 rounded-lg p-4" key={index}>
+							<Skeleton className="h-10 w-10 shrink-0 rounded-full" />
+							<div className="min-w-0 flex-1">
+								<div className="flex w-full items-center gap-2">
+									<Skeleton className="h-4 w-24" />
+									<Skeleton className="ml-auto h-3 w-12 shrink-0" />
 								</div>
-								<div className='mt-2'>
-									<Skeleton className='h-3 w-full' />
+								<div className="mt-2">
+									<Skeleton className="h-3 w-full" />
 								</div>
 							</div>
 						</div>
@@ -210,5 +209,5 @@ export const SkeletonConversationsPanel = () => {
 				</div>
 			</div>
 		</div>
-	)
-}
+	);
+};
