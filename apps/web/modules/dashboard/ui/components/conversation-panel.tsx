@@ -123,7 +123,7 @@ export const ConversationPanel = () => {
 								<Link
 									href={`/conversations/${conversation._id}`}
 									className={cn(
-										'relative flex coursor-pointer items-start gap-3 border-b p-4 py-5 text-sm leading-tight hover:bg-accent hover:text-accent-foreground',
+										'relative flex cursor-pointer items-start gap-3 border-b p-4 py-5 text-sm leading-tight hover:bg-accent hover:text-accent-foreground',
 										pathname === `/conversations/${conversation._id}` &&
 											'bg-accent text-accent-foreground'
 									)}

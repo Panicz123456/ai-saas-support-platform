@@ -1,14 +1,17 @@
+import { generateText } from 'ai';
 import { ConvexError, v } from 'convex/values';
-import { mutation, query } from '../_generated/server';
-import { components, internal } from '../_generated/api';
-import { supportAgent } from '../system/ai/agents/supportAgent';
-import { paginationOptsValidator } from 'convex/server';
 import { saveMessage } from '@convex-dev/agent';
+import { paginationOptsValidator } from 'convex/server';
 
-export const create = mutation({
+import { action, mutation, query } from '../_generated/server';
+import { components } from '../_generated/api';
+import { supportAgent } from '../system/ai/agents/supportAgent';
+import { openai } from '@ai-sdk/openai';
+import { ar } from 'zod/v4/locales';
+
+export const enhanceResponse = action({
 	args: {
 		prompt: v.string(),
-		conversationId: v.id("conversation")
 	},
 	handler: async (ctx, args) => {
 		const identity = await ctx.auth.getUserIdentity();
@@ -29,7 +32,49 @@ export const create = mutation({
 			});
 		}
 
-		const conversation = await ctx.db.get(args.conversationId)
+		const response = await generateText({
+			model: openai('gpt-4o-mini'),
+			messages: [
+				{
+					role: 'system',
+					content: 'Enhance the operator message to be more professional, clear and helpful while maintaining the original meaning',
+				},
+				{
+					role: "user",
+					content: args.prompt
+				}
+			],
+		});
+
+		return response.text
+	},
+});
+
+export const create = mutation({
+	args: {
+		prompt: v.string(),
+		conversationId: v.id('conversation'),
+	},
+	handler: async (ctx, args) => {
+		const identity = await ctx.auth.getUserIdentity();
+
+		if (identity === null) {
+			throw new ConvexError({
+				code: 'UNAUTHORIZED',
+				message: 'Unauthorized',
+			});
+		}
+
+		const orgId = identity.orgId as string;
+
+		if (!orgId) {
+			throw new ConvexError({
+				code: 'NOT_FOUND',
+				message: 'Organization Id not found',
+			});
+		}
+
+		const conversation = await ctx.db.get(args.conversationId);
 
 		if (!conversation) {
 			throw new ConvexError({
@@ -38,7 +83,7 @@ export const create = mutation({
 			});
 		}
 
-		if (conversation.organizationId !== orgId) { 
+		if (conversation.organizationId !== orgId) {
 			throw new ConvexError({
 				code: 'UNAUTHORIZED',
 				message: 'Invalid organization id',
@@ -52,14 +97,14 @@ export const create = mutation({
 			});
 		}
 
-		await saveMessage(ctx, components.agent, { 
+		await saveMessage(ctx, components.agent, {
 			threadId: conversation.threadId,
 			agentName: identity.familyName,
-			message: { 
-				role: "assistant",
-				content: args.prompt
-			}
-		})
+			message: {
+				role: 'assistant',
+				content: args.prompt,
+			},
+		});
 	},
 });
 
@@ -99,17 +144,16 @@ export const getMany = query({
 			});
 		}
 
-		if (conversation.organizationId !== orgId) { 
-			throw new ConvexError({ 
-				code: "UNAUTHORIZED",
-				message: "Invalid organization id"
-			})
+		if (conversation.organizationId !== orgId) {
+			throw new ConvexError({
+				code: 'UNAUTHORIZED',
+				message: 'Invalid organization id',
+			});
 		}
 
 		const paginated = await supportAgent.listMessages(ctx, {
 			threadId: args.threadId,
 			paginationOpts: args.paginationOpts,
-			
 		});
 
 		return paginated;
