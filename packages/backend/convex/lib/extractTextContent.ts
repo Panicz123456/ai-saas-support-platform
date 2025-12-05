@@ -21,7 +21,7 @@ const SUPPORTED_IMAGE_TYPES = [
 
 const SYSTEM_PROMPTS = {
 	image:
-		'You turn images into text. If it a photo of a document, transcribie it. If it not a document, describe it',
+		'You turn images into text. If it is a photo of a document, transcribe it. If it is not a document, describe it',
 	pdf: 'You transform PDF files into text.',
 	html: 'You transform content into markdown',
 };
@@ -77,24 +77,24 @@ async function extractPdfText(
 	mimeType: string,
 	filename: string
 ): Promise<string> {
-  const reslut = await generateText({ 
-    model: AI_MODEL.pdf,
-    system: SYSTEM_PROMPTS.pdf,
-    messages: [ 
-      { 
-        role: "user",
-        content: [ 
-          { type: "file", data: new URL(url), mediaType: mimeType, filename },
-          { 
-            type: "text",
-            text: "extract the text from the pdf"
-          }
-        ]
-      }
-    ]
-  })
+  const result = await generateText({
+		model: AI_MODEL.pdf,
+		system: SYSTEM_PROMPTS.pdf,
+		messages: [
+			{
+				role: 'user',
+				content: [
+					{ type: 'file', data: new URL(url), mediaType: mimeType, filename },
+					{
+						type: 'text',
+						text: 'extract the text from the pdf',
+					},
+				],
+			},
+		],
+	});
 
-  return reslut.text;
+  return result.text;
 }
 
 async function extractTextFileContent(

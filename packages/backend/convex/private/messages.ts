@@ -7,7 +7,6 @@ import { action, mutation, query } from '../_generated/server';
 import { components } from '../_generated/api';
 import { supportAgent } from '../system/ai/agents/supportAgent';
 import { openai } from '@ai-sdk/openai';
-import { ar } from 'zod/v4/locales';
 
 export const enhanceResponse = action({
 	args: {
