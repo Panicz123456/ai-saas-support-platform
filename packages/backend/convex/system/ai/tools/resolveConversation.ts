@@ -4,7 +4,7 @@ import { createTool } from '@convex-dev/agent';
 import { internal } from '../../../_generated/api';
 import { supportAgent } from '../agents/supportAgent';
 
-export const resolveConversation = createTool({
+export const resolveConversationTool = createTool({
 	description: 'Resolve a conversation',
 	args: z.object({}),
   handler: async (ctx) => {
