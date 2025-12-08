@@ -1,12 +1,12 @@
-import { generateText } from 'ai';
 import { ConvexError, v } from 'convex/values';
-import { saveMessage } from '@convex-dev/agent';
-import { paginationOptsValidator } from 'convex/server';
-
+import { generateText } from 'ai';
 import { action, mutation, query } from '../_generated/server';
-import { components } from '../_generated/api';
+import { components, internal } from '../_generated/api';
 import { supportAgent } from '../system/ai/agents/supportAgent';
+import { paginationOptsValidator } from 'convex/server';
+import { saveMessage } from '@convex-dev/agent';
 import { openai } from '@ai-sdk/openai';
+import { OPERATOR_MESSAGE_ENHANCEMENT_PROMPT } from '../system/ai/constants';
 
 export const enhanceResponse = action({
 	args: {
@@ -18,7 +18,7 @@ export const enhanceResponse = action({
 		if (identity === null) {
 			throw new ConvexError({
 				code: 'UNAUTHORIZED',
-				message: 'Unauthorized',
+				message: 'Identity not found',
 			});
 		}
 
@@ -26,8 +26,8 @@ export const enhanceResponse = action({
 
 		if (!orgId) {
 			throw new ConvexError({
-				code: 'NOT_FOUND',
-				message: 'Organization Id not found',
+				code: 'UNAUTHORIZED',
+				message: 'Organization not found',
 			});
 		}
 
@@ -36,16 +36,16 @@ export const enhanceResponse = action({
 			messages: [
 				{
 					role: 'system',
-					content: 'Enhance the operator message to be more professional, clear and helpful while maintaining the original meaning',
+					content: OPERATOR_MESSAGE_ENHANCEMENT_PROMPT,
 				},
 				{
-					role: "user",
-					content: args.prompt
-				}
+					role: 'user',
+					content: args.prompt,
+				},
 			],
 		});
 
-		return response.text
+		return response.text;
 	},
 });
 
@@ -60,7 +60,7 @@ export const create = mutation({
 		if (identity === null) {
 			throw new ConvexError({
 				code: 'UNAUTHORIZED',
-				message: 'Unauthorized',
+				message: 'Identity not found',
 			});
 		}
 
@@ -68,8 +68,8 @@ export const create = mutation({
 
 		if (!orgId) {
 			throw new ConvexError({
-				code: 'NOT_FOUND',
-				message: 'Organization Id not found',
+				code: 'UNAUTHORIZED',
+				message: 'Organization not found',
 			});
 		}
 
@@ -78,32 +78,33 @@ export const create = mutation({
 		if (!conversation) {
 			throw new ConvexError({
 				code: 'NOT_FOUND',
-				message: 'conversation not found',
+				message: 'Conversation not found',
 			});
 		}
 
 		if (conversation.organizationId !== orgId) {
 			throw new ConvexError({
 				code: 'UNAUTHORIZED',
-				message: 'Invalid organization id',
+				message: 'Invalid Organization ID',
 			});
 		}
 
 		if (conversation.status === 'resolved') {
 			throw new ConvexError({
 				code: 'BAD_REQUEST',
-				message: 'Conversation is already resolved',
+				message: 'Conversation resolved',
 			});
 		}
 
-		if (conversation.status === 'unresolved') { 
-			await ctx.db.patch(args.conversationId, { 
-				status: "escalated"
-			})
+		if (conversation.status === 'unresolved') {
+			await ctx.db.patch(args.conversationId, {
+				status: 'escalated',
+			});
 		}
 
 		await saveMessage(ctx, components.agent, {
 			threadId: conversation.threadId,
+			// TODO: Check if "agentName" is needed or not
 			agentName: identity.familyName,
 			message: {
 				role: 'assistant',
@@ -124,7 +125,7 @@ export const getMany = query({
 		if (identity === null) {
 			throw new ConvexError({
 				code: 'UNAUTHORIZED',
-				message: 'Unauthorized',
+				message: 'Identity not found',
 			});
 		}
 
@@ -132,8 +133,8 @@ export const getMany = query({
 
 		if (!orgId) {
 			throw new ConvexError({
-				code: 'NOT_FOUND',
-				message: 'Organization Id not found',
+				code: 'UNAUTHORIZED',
+				message: 'Organization not found',
 			});
 		}
 
@@ -152,7 +153,7 @@ export const getMany = query({
 		if (conversation.organizationId !== orgId) {
 			throw new ConvexError({
 				code: 'UNAUTHORIZED',
-				message: 'Invalid organization id',
+				message: 'Invalid Organization ID',
 			});
 		}
 

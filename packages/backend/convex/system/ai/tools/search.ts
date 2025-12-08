@@ -6,9 +6,8 @@ import { createTool } from '@convex-dev/agent';
 import { internal } from '../../../_generated/api';
 import { supportAgent } from '../agents/supportAgent';
 import rag from '../rag';
-import { SEARCH_INTERPRETER_PROMPT } from '../constants';
 
-export const searchTool = createTool({
+export const search = createTool({
 	description:
 		'Search the knowledge base for relevent information to help answer a question.',
 	args: z.object({
@@ -45,8 +44,8 @@ export const searchTool = createTool({
       model: openai.chat("gpt-4o-mini"),
       messages: [ 
         {
-					role: "system",
-					content: SEARCH_INTERPRETER_PROMPT,
+          role: "system",
+          content: "You interprt knowledge base search results and provide a helpful, accurate answer to user's question.",
         },
         { 
           role: "user",

@@ -19,7 +19,7 @@ import { ScrollArea } from '@workspace/ui/components/scroll-area';
 import { DicebearAvatar } from '@workspace/ui/components/dicebear-avatar';
 import { useInfiniteScroll } from '@workspace/ui/hooks/use-infinite-scroll';
 import { InfiniteScrollTrigger } from '@workspace/ui/components/infinite-scroll-trigger';
-import { getCountrtFlagUrl, getCountryFromTimezone } from '@/lib/country-utils';
+import { getCountryFlagUrl, getCountryFromTimezone } from '@/lib/country-utils';
 import { ConversationStatusIcon } from '@workspace/ui/components/conversation-status-icon';
 import {
 	Select,
@@ -117,7 +117,7 @@ export const ConversationPanel = () => {
 							);
 
 							const countryFlagUrl = country?.code
-								? getCountrtFlagUrl(country.code)
+								? getCountryFlagUrl(country.code)
 								: undefined;
 							return (
 								<Link

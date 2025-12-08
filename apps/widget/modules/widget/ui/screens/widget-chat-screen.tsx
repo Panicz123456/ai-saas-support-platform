@@ -9,7 +9,6 @@ import { toUIMessages, useThreadMessages } from '@convex-dev/agent/react';
 
 import { api } from '@workspace/backend/_generated/api';
 import { Button } from '@workspace/ui/components/button';
-import { Id } from '@workspace/backend/_generated/dataModel';
 import { Form, FormField } from '@workspace/ui/components/form';
 import { AIResponse } from '@workspace/ui/components/ai/response';
 import { DicebearAvatar } from '@workspace/ui/components/dicebear-avatar';
@@ -89,7 +88,7 @@ export const WidgetChatScreen = () => {
 
 	const createMessage = useAction(api.public.messages.create);
 	const onSubmit = async (values: chatFormSchemaType) => {
-		if (!conversation) {
+		if (!conversation || !contactSessionId) {
 			return;
 		}
 
@@ -98,7 +97,7 @@ export const WidgetChatScreen = () => {
 		await createMessage({
 			threadId: conversation.threadId,
 			prompt: values.message,
-			contactSessionId: contactSessionId as Id<'contactSession'>,
+			contactSessionId,
 		});
 	};
 

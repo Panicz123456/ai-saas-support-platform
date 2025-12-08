@@ -1,13 +1,10 @@
-import { ConvexError, v } from 'convex/values';
 import { MessageDoc } from '@convex-dev/agent';
+import { ConvexError, v } from 'convex/values';
 import { paginationOptsValidator, PaginationResult } from 'convex/server';
 
 import { Doc } from '../_generated/dataModel';
 import { mutation, query } from '../_generated/server';
-
 import { supportAgent } from '../system/ai/agents/supportAgent';
-
-
 
 export const updateStatus = mutation({
 	args: {
@@ -24,7 +21,7 @@ export const updateStatus = mutation({
 		if (identity === null) {
 			throw new ConvexError({
 				code: 'UNAUTHORIZED',
-				message: 'Unauthorized',
+				message: 'Identity not found',
 			});
 		}
 
@@ -32,8 +29,8 @@ export const updateStatus = mutation({
 
 		if (!orgId) {
 			throw new ConvexError({
-				code: 'NOT_FOUND',
-				message: 'Organization Id not found',
+				code: 'UNAUTHORIZED',
+				message: 'Organization not found',
 			});
 		}
 
@@ -48,8 +45,8 @@ export const updateStatus = mutation({
 
 		if (conversation.organizationId !== orgId) {
 			throw new ConvexError({
-				code: 'UNAUTHORIZED',
-				message: 'Invalid organization id',
+				code: 'UNAUTHORZIED',
+				message: 'Invalid Organization ID',
 			});
 		}
 
@@ -69,7 +66,7 @@ export const getOne = query({
 		if (identity === null) {
 			throw new ConvexError({
 				code: 'UNAUTHORIZED',
-				message: 'Unauthorized',
+				message: 'Identity not found',
 			});
 		}
 
@@ -77,8 +74,8 @@ export const getOne = query({
 
 		if (!orgId) {
 			throw new ConvexError({
-				code: 'NOT_FOUND',
-				message: 'Organization Id not found',
+				code: 'UNAUTHORIZED',
+				message: 'Organization not found',
 			});
 		}
 
@@ -90,10 +87,11 @@ export const getOne = query({
 				message: 'Conversation not found',
 			});
 		}
-		if (conversation?.organizationId !== orgId) {
+
+		if (conversation.organizationId !== orgId) {
 			throw new ConvexError({
-				code: 'UNAUTHORIZED',
-				message: 'Invalid organization id',
+				code: 'UNAUTHORZIED',
+				message: 'Invalid Organization ID',
 			});
 		}
 
@@ -102,7 +100,7 @@ export const getOne = query({
 		if (!contactSession) {
 			throw new ConvexError({
 				code: 'NOT_FOUND',
-				message: 'Contact session not found',
+				message: 'Contact Session not found',
 			});
 		}
 
@@ -130,7 +128,7 @@ export const getMany = query({
 		if (identity === null) {
 			throw new ConvexError({
 				code: 'UNAUTHORIZED',
-				message: 'Unauthorized',
+				message: 'Identity not found',
 			});
 		}
 
@@ -138,15 +136,15 @@ export const getMany = query({
 
 		if (!orgId) {
 			throw new ConvexError({
-				code: 'NOT_FOUND',
-				message: 'Organization Id not found',
+				code: 'UNAUTHORIZED',
+				message: 'Organization not found',
 			});
 		}
 
-		let conversation: PaginationResult<Doc<'conversation'>>;
+		let conversations: PaginationResult<Doc<'conversation'>>;
 
 		if (args.status) {
-			conversation = await ctx.db
+			conversations = await ctx.db
 				.query('conversation')
 				.withIndex('by_status_and_organization_id', (q) =>
 					q
@@ -156,15 +154,15 @@ export const getMany = query({
 				.order('desc')
 				.paginate(args.paginationOpts);
 		} else {
-			conversation = await ctx.db
+			conversations = await ctx.db
 				.query('conversation')
 				.withIndex('by_organization_id', (q) => q.eq('organizationId', orgId))
 				.order('desc')
 				.paginate(args.paginationOpts);
 		}
 
-		const conversationWirhAdditionalData = await Promise.all(
-			conversation.page.map(async (conversation) => {
+		const conversationsWithAdditionalData = await Promise.all(
+			conversations.page.map(async (conversation) => {
 				let lastMessage: MessageDoc | null = null;
 
 				const contactSession = await ctx.db.get(conversation.contactSessionId);
@@ -190,14 +188,13 @@ export const getMany = query({
 			})
 		);
 
-		const validConversation = conversationWirhAdditionalData.filter(
-			(conversation): conversation is NonNullable<typeof conversation> =>
-				conversation !== null
+		const validConversations = conversationsWithAdditionalData.filter(
+			(conv): conv is NonNullable<typeof conv> => conv !== null
 		);
 
 		return {
-			...conversation,
-			page: validConversation,
+			...conversations,
+			page: validConversations,
 		};
 	},
 });

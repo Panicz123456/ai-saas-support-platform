@@ -15,6 +15,6 @@ export function getCountryFromTimezone(timezone?: string) {
   }
 }
 
-export function getCountrtFlagUrl(countryCode: string) { 
-  return `https://flagcdn.com/w20/${countryCode.toLowerCase()}.png`
+export function getCountryFlagUrl(countryCode: string) {
+	return `https://flagcdn.com/w20/${countryCode.toLowerCase()}.png`;
 }

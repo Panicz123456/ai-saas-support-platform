@@ -4,7 +4,7 @@ import { createTool } from '@convex-dev/agent';
 import { internal } from '../../../_generated/api';
 import { supportAgent } from '../agents/supportAgent';
 
-export const escalateConversationTool = createTool({
+export const escalateConversation = createTool({
 	description: 'Escalate a conversation',
 	args: z.object({}),
   handler: async (ctx) => {
