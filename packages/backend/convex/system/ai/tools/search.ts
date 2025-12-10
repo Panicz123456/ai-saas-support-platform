@@ -1,17 +1,17 @@
-import z from 'zod';
-import { generateText } from 'ai';
 import { openai } from '@ai-sdk/openai';
 import { createTool } from '@convex-dev/agent';
-
+import { generateText } from 'ai';
+import z from 'zod';
 import { internal } from '../../../_generated/api';
 import { supportAgent } from '../agents/supportAgent';
 import rag from '../rag';
+import { SEARCH_INTERPRETER_PROMPT } from '../constants';
 
 export const search = createTool({
 	description:
-		'Search the knowledge base for relevent information to help answer a question.',
+		'Search the knowledge base for relevant information to help answer user questions',
 	args: z.object({
-		query: z.string().describe('The search query to find infomation'),
+		query: z.string().describe('The search query to find relevant information'),
 	}),
 	handler: async (ctx, args) => {
 		if (!ctx.threadId) {
@@ -29,39 +29,39 @@ export const search = createTool({
 
 		const orgId = conversation.organizationId;
 
-		const searchResults = await rag.search(ctx, {
+		const searchResult = await rag.search(ctx, {
 			namespace: orgId,
 			query: args.query,
 			limit: 5,
 		});
 
-		const contextText = `Found result in ${searchResults.entries
+		const contextText = `Found results in ${searchResult.entries
 			.map((e) => e.title || null)
 			.filter((t) => t !== null)
-      .join(', ')}. Here is the context: \n\n${searchResults.text}`;
+			.join(', ')}. Here is the context:\n\n${searchResult.text}`;
 
-    const response = await generateText({ 
-      model: openai.chat("gpt-4o-mini"),
-      messages: [ 
-        {
-          role: "system",
-          content: "You interprt knowledge base search results and provide a helpful, accurate answer to user's question.",
-        },
-        { 
-          role: "user",
-          content: `User question "${args.query}"\n\nSearch resluls: ${contextText}`
-        }
-      ],
-    })
+		const response = await generateText({
+			messages: [
+				{
+					role: 'system',
+					content: SEARCH_INTERPRETER_PROMPT,
+				},
+				{
+					role: 'user',
+					content: `User asked: "${args.query}"\n\nSearch results: ${contextText}`,
+				},
+			],
+			model: openai.chat('gpt-4o-mini'),
+		});
 
-    await supportAgent.saveMessage(ctx, { 
-      threadId: ctx.threadId,
-      message: { 
-        role: 'assistant',
-        content: response.text
-      }
-    })
+		await supportAgent.saveMessage(ctx, {
+			threadId: ctx.threadId,
+			message: {
+				role: 'assistant',
+				content: response.text,
+			},
+		});
 
-    return response.text
+		return response.text;
 	},
 });

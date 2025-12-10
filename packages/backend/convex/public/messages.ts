@@ -1,13 +1,12 @@
 import { ConvexError, v } from 'convex/values';
-import { saveMessage } from '@convex-dev/agent';
-
-import { paginationOptsValidator } from 'convex/server';
-import { search } from '../system/ai/tools/search';
 import { action, query } from '../_generated/server';
 import { components, internal } from '../_generated/api';
 import { supportAgent } from '../system/ai/agents/supportAgent';
-import { resolveConversation } from '../system/ai/tools/resolveConversation';
+import { paginationOptsValidator } from 'convex/server';
 import { escalateConversation } from '../system/ai/tools/escalateConversation';
+import { resolveConversation } from '../system/ai/tools/resolveConversation';
+import { saveMessage } from '@convex-dev/agent';
+import { search } from '../system/ai/tools/search';
 
 export const create = action({
 	args: {
@@ -26,7 +25,7 @@ export const create = action({
 		if (!contactSession || contactSession.expairedAt < Date.now()) {
 			throw new ConvexError({
 				code: 'UNAUTHORIZED',
-				message: 'Contact session not found or expired',
+				message: 'Invalid session',
 			});
 		}
 
@@ -40,31 +39,31 @@ export const create = action({
 		if (!conversation) {
 			throw new ConvexError({
 				code: 'NOT_FOUND',
-				message: 'conversation not found',
+				message: 'Conversation not found',
 			});
 		}
 
 		if (conversation.status === 'resolved') {
 			throw new ConvexError({
 				code: 'BAD_REQUEST',
-				message: 'Conversation is already resolved',
+				message: 'Conversation resolved',
 			});
 		}
 
-		// TODO: Implement subscription check
-		const shouldTriggerAgent = conversation.status === 'unresolved';
+		// This refreshes the user's session if they are within the threshold
+
+		const shouldTriggerAgent =
+			conversation.status === 'unresolved'
 
 		if (shouldTriggerAgent) {
 			await supportAgent.generateText(
 				ctx,
-				{
-					threadId: args.threadId,
-				},
+				{ threadId: args.threadId },
 				{
 					prompt: args.prompt,
 					tools: {
-						resolveConversationTool: resolveConversation,
 						escalateConversationTool: escalateConversation,
+						resolveConversationTool: resolveConversation,
 						searchTool: search,
 					},
 				}
@@ -90,7 +89,7 @@ export const getMany = query({
 		if (!contactSession || contactSession.expairedAt < Date.now()) {
 			throw new ConvexError({
 				code: 'UNAUTHORIZED',
-				message: 'Contact session not found or expired',
+				message: 'Invalid session',
 			});
 		}
 

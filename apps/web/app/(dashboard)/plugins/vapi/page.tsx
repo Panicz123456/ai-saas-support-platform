@@ -1,4 +1,4 @@
-import { VapiView } from "@/modules/plugins/ui/views/vapi-views";
+import { VapiView } from "@/modules/plugins/ui/views/vapi-view";
 
 const Page = () => {
 	return <VapiView />
