@@ -7,7 +7,7 @@ import { supportAgent } from '../agents/supportAgent';
 import rag from '../rag';
 import { SEARCH_INTERPRETER_PROMPT } from '../constants';
 
-export const search = createTool({
+export const searchTool = createTool({
 	description:
 		'Search the knowledge base for relevant information to help answer user questions',
 	args: z.object({

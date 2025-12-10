@@ -13,7 +13,7 @@ export const getMany = query({
 	},
 	handler: async (ctx, args) => {
 		const session = await ctx.db.get(args.contactSessionId);
-		if (!session || session.expairedAt < Date.now()) {
+		if (!session || session.expiredAt < Date.now()) {
 			throw new ConvexError({
 				code: 'UNAUTHORIZED',
 				message: 'Invalid Session',
@@ -66,7 +66,7 @@ export const getOne = query({
 	},
 	handler: async (ctx, args) => {
 		const session = await ctx.db.get(args.contactSessionId);
-		if (!session || session.expairedAt < Date.now()) {
+		if (!session || session.expiredAt < Date.now()) {
 			throw new ConvexError({
 				code: 'UNAUTHORIZED',
 				message: 'Invalid Session',
@@ -104,7 +104,7 @@ export const create = mutation({
 	},
 	handler: async (ctx, args) => {
 		const session = await ctx.db.get(args.contactSessionId);
-		if (!session || session.expairedAt < Date.now()) {
+		if (!session || session.expiredAt < Date.now()) {
 			throw new ConvexError({
 				code: 'UNAUTHORIZED',
 				message: 'Invalid session',
@@ -115,12 +115,13 @@ export const create = mutation({
 			userId: args.organizationId,
 		});
 
+		const initialMessage = 'Hello, how can I help you today?';
 		await saveMessage(ctx, components.agent, {
 			threadId,
 			message: {
 				role: 'assistant',
 				// TODO: modify to widget setrtings inital message
-				content: 'Hello, how can I help you today?',
+				content: initialMessage,
 			},
 		});
 

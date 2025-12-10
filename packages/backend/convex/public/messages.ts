@@ -1,12 +1,12 @@
-import { ConvexError, v } from 'convex/values';
-import { action, query } from '../_generated/server';
-import { components, internal } from '../_generated/api';
-import { supportAgent } from '../system/ai/agents/supportAgent';
-import { paginationOptsValidator } from 'convex/server';
-import { escalateConversation } from '../system/ai/tools/escalateConversation';
-import { resolveConversation } from '../system/ai/tools/resolveConversation';
 import { saveMessage } from '@convex-dev/agent';
-import { search } from '../system/ai/tools/search';
+import { paginationOptsValidator } from 'convex/server';
+import { ConvexError, v } from 'convex/values';
+import { components, internal } from '../_generated/api';
+import { action, query } from '../_generated/server';
+import { supportAgent } from '../system/ai/agents/supportAgent';
+import { escalateConversationTool } from '../system/ai/tools/escalateConversation';
+import { resolveConversationTool } from '../system/ai/tools/resolveConversation';
+import { searchTool } from '../system/ai/tools/search';
 
 export const create = action({
 	args: {
@@ -22,7 +22,7 @@ export const create = action({
 			}
 		);
 
-		if (!contactSession || contactSession.expairedAt < Date.now()) {
+		if (!contactSession || contactSession.expiredAt < Date.now()) {
 			throw new ConvexError({
 				code: 'UNAUTHORIZED',
 				message: 'Invalid session',
@@ -50,10 +50,7 @@ export const create = action({
 			});
 		}
 
-		// This refreshes the user's session if they are within the threshold
-
-		const shouldTriggerAgent =
-			conversation.status === 'unresolved'
+		const shouldTriggerAgent = conversation.status === 'unresolved';
 
 		if (shouldTriggerAgent) {
 			await supportAgent.generateText(
@@ -62,9 +59,9 @@ export const create = action({
 				{
 					prompt: args.prompt,
 					tools: {
-						escalateConversationTool: escalateConversation,
-						resolveConversationTool: resolveConversation,
-						searchTool: search,
+						escalateConversationTool,
+						resolveConversationTool,
+						searchTool,
 					},
 				}
 			);
@@ -86,7 +83,7 @@ export const getMany = query({
 	handler: async (ctx, args) => {
 		const contactSession = await ctx.db.get(args.contactSessionId);
 
-		if (!contactSession || contactSession.expairedAt < Date.now()) {
+		if (!contactSession || contactSession.expiredAt < Date.now()) {
 			throw new ConvexError({
 				code: 'UNAUTHORIZED',
 				message: 'Invalid session',

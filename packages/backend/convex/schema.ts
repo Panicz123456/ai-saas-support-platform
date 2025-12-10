@@ -2,6 +2,21 @@ import { defineSchema, defineTable } from 'convex/server';
 import { v } from 'convex/values';
 
 export default defineSchema({
+	widgetSettings: defineTable({
+		organizationId: v.string(),
+		greetMessage: v.string(),
+		defaultSuggestions: v.object({
+			suggestion1: v.optional(v.string()),
+			suggestion2: v.optional(v.string()),
+			suggestion3: v.optional(v.string()),
+		}),
+		vapiSettings: v.object({
+			assistantId: v.optional(v.string()),
+			phoneNumber: v.optional(v.string()),
+		}),
+	})
+	.index("by_organization_id", ["organizationId"])
+	,
 	plugins: defineTable({
 		organizationId: v.string(),
 		service: v.union(v.literal('vapi')),
@@ -27,7 +42,7 @@ export default defineSchema({
 		name: v.string(),
 		email: v.string(),
 		organizationId: v.string(),
-		expairedAt: v.number(),
+		expiredAt: v.number(),
 		metadata: v.optional(
 			v.object({
 				userAgent: v.optional(v.string()),
@@ -46,7 +61,7 @@ export default defineSchema({
 		),
 	})
 		.index('by_organization_id', ['organizationId'])
-		.index('by_expired_at', ['expairedAt']),
+		.index('by_expired_at', ['expiredAt']),
 	users: defineTable({
 		name: v.string(),
 	}),
