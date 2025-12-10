@@ -9,7 +9,7 @@ interface TranscriptionMessage {
 export const useVapi = () => { 
   const [vapi, setVapi] = useState<Vapi | null>(null)
   const [isConnected, setIsConnected] = useState(false)
-  const [isConnecing, setIsConnecting] = useState(false)
+  const [isConnecting, setIsConnecting] = useState(false)
   const [isSpeaking, setIsSpeaking] = useState(false)
   const [transcript, setTranscript] = useState<TranscriptionMessage[]>([])
 
@@ -74,12 +74,12 @@ export const useVapi = () => {
     }
   }
 
-  return { 
-    isSpeaking,
-    isConnecing,
-    isConnected,
-    transcript,
-    startCall, 
-    endCall
-  }
+  return {
+		isSpeaking,
+		isConnecting,
+		isConnected,
+		transcript,
+		startCall,
+		endCall,
+	};
 }
