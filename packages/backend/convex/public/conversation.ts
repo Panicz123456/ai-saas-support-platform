@@ -32,13 +32,13 @@ export const getMany = query({
 			conversations.page.map(async (conversations) => {
 				let lastMessage: MessageDoc | null = null;
 
-				const messages = await supportAgent.listMessages(ctx, { 
+				const messages = await supportAgent.listMessages(ctx, {
 					threadId: conversations.threadId,
-					paginationOpts: {numItems: 1, cursor: null}
-				})
+					paginationOpts: { numItems: 1, cursor: null },
+				});
 
-				if (messages.page.length > 0) { 
-					lastMessage = messages.page[0] ?? null
+				if (messages.page.length > 0) {
+					lastMessage = messages.page[0] ?? null;
 				}
 
 				return {
@@ -52,10 +52,10 @@ export const getMany = query({
 			})
 		);
 
-		return { 
+		return {
 			...conversations,
-			page: conversationLastMessage
-		}
+			page: conversationLastMessage,
+		};
 	},
 });
 
@@ -104,6 +104,7 @@ export const create = mutation({
 	},
 	handler: async (ctx, args) => {
 		const session = await ctx.db.get(args.contactSessionId);
+
 		if (!session || session.expiredAt < Date.now()) {
 			throw new ConvexError({
 				code: 'UNAUTHORIZED',
@@ -111,17 +112,22 @@ export const create = mutation({
 			});
 		}
 
+		const widgetSettings = await ctx.db
+			.query('widgetSettings')
+			.withIndex('by_organization_id', (q) =>
+				q.eq("organizationId", session.organizationId)
+			)
+			.unique()
+
 		const { threadId } = await supportAgent.createThread(ctx, {
 			userId: args.organizationId,
 		});
 
-		const initialMessage = 'Hello, how can I help you today?';
 		await saveMessage(ctx, components.agent, {
 			threadId,
 			message: {
 				role: 'assistant',
-				// TODO: modify to widget setrtings inital message
-				content: initialMessage,
+				content: widgetSettings?.greetMessage ||  'Hello, how can I help you today?',
 			},
 		});
 
