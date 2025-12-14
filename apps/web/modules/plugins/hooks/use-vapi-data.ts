@@ -93,7 +93,7 @@ export const useVapiPhoneNumbers = (): {
 		return () => {
 			cancelled = true;
 		};
-	}, []);
+	}, [getPhoneNumbers]);
 
 	return { data, isLoading, error };
 };

@@ -26,8 +26,6 @@ export const upsert = mutation({
 			});
 		}
 
-		// TODO: Check for sub
-
 		await ctx.scheduler.runAfter(0, internal.system.secrets.upsert, {
 			service: args.service,
 			organizationId: orgId,

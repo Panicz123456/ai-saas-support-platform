@@ -7,12 +7,12 @@ import {
 	SecretsManagerClient,
 } from '@aws-sdk/client-secrets-manager';
 
-export function createSecretsManagerClient() {
+export function createSecretsManagerClient(): SecretsManagerClient {
 	return new SecretsManagerClient({
 		region: process.env.AWS_REGION,
 		credentials: {
-			accessKeyId: process.env.AWS_ACCESS_KEY_ID as string,
-			secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
+			accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
+			secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
 		},
 	});
 }
@@ -28,27 +28,27 @@ export async function upsertSecret(
 	secretName: string,
 	secretValue: Record<string, unknown>
 ): Promise<void> {
-  const client = createSecretsManagerClient()
+	const client = createSecretsManagerClient();
 
-  try {
-    await client.send(
-      new CreateSecretCommand({ 
-        Name: secretName,
-        SecretString: JSON.stringify(secretValue)
-      }),
-    )
-  } catch (error) {
-    if (error instanceof ResourceExistsException) { 
-      await client.send(
-        new PutSecretValueCommand({
-          SecretId: secretName,
-          SecretString: JSON.stringify(secretValue)
-         })
-      )
-    } else { 
-      throw error;
-    }
-  }
+	try {
+		await client.send(
+			new CreateSecretCommand({
+				Name: secretName,
+				SecretString: JSON.stringify(secretValue),
+			})
+		);
+	} catch (error) {
+		if (error instanceof ResourceExistsException) {
+			await client.send(
+				new PutSecretValueCommand({
+					SecretId: secretName,
+					SecretString: JSON.stringify(secretValue),
+				})
+			);
+		} else {
+			throw error;
+		}
+	}
 }
 
 export function parseSecretString<T = Record<string, unknown>>(

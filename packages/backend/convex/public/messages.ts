@@ -1,11 +1,11 @@
-import { saveMessage } from '@convex-dev/agent';
-import { paginationOptsValidator } from 'convex/server';
 import { ConvexError, v } from 'convex/values';
-import { components, internal } from '../_generated/api';
 import { action, query } from '../_generated/server';
+import { components, internal } from '../_generated/api';
 import { supportAgent } from '../system/ai/agents/supportAgent';
+import { paginationOptsValidator } from 'convex/server';
 import { escalateConversationTool } from '../system/ai/tools/escalateConversation';
 import { resolveConversationTool } from '../system/ai/tools/resolveConversation';
+import { saveMessage } from '@convex-dev/agent';
 import { searchTool } from '../system/ai/tools/search';
 
 export const create = action({
@@ -50,7 +50,8 @@ export const create = action({
 			});
 		}
 
-		const shouldTriggerAgent = conversation.status === 'unresolved';
+		const shouldTriggerAgent =
+			conversation.status === 'unresolved'
 
 		if (shouldTriggerAgent) {
 			await supportAgent.generateText(
