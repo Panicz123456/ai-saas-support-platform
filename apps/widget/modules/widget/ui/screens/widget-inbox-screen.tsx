@@ -78,7 +78,7 @@ export const WidgetInboxScreen = () => {
 								<div className="flex w-full items-center justify-between gap-x-2">
 									<p className="text-muted-foreground text-xs">Chat</p>
 									<p className="text-muted-foreground text-xs">
-										{formatDistanceToNow(new Date(conversation.creationTime))}
+										{formatDistanceToNow(new Date(conversation._creationTime))}
 									</p>
 								</div>
 								<div className="flex w-full items-center justify-between gap-x-2">

@@ -33,7 +33,7 @@ export const create = mutation({
 			name: args.name,
 			email: args.email,
 			organizationId: args.organizationId,
-			expiredAt: expiredAt,
+			expiredAt,
 			metadata: args.metadata,
 		});
 
@@ -47,6 +47,7 @@ export const validate = mutation({
 	},
 	handler: async (ctx, args) => {
 		const contactSession = await ctx.db.get(args.contactSessionId);
+
 		if (!contactSession) {
 			return { valid: false, reason: 'Contact session not found' };
 		}
@@ -55,6 +56,6 @@ export const validate = mutation({
 			return { valid: false, reason: 'Contact session expired' };
 		}
 
-		return {valid: true, contactSession}
+		return { valid: true, contactSession };
 	},
 });

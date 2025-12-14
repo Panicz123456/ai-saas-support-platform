@@ -1,5 +1,4 @@
 import { ConvexError, v } from 'convex/values';
-
 import { mutation, query } from '../_generated/server';
 
 export const upsert = mutation({
@@ -37,29 +36,28 @@ export const upsert = mutation({
 		const existingWidgetSettings = await ctx.db
 			.query('widgetSettings')
 			.withIndex('by_organization_id', (q) => q.eq('organizationId', orgId))
-      .unique();
-    
-    if (existingWidgetSettings) { 
-      await ctx.db.patch(existingWidgetSettings._id, { 
-        greetMessage: args.greetMessage,
-        defaultSuggestions: args.defaultSuggestions,
-        vapiSettings: args.vapiSettings
-      })
-    } else { 
-      await ctx.db.insert("widgetSettings", { 
-        organizationId: orgId,
-        greetMessage: args.greetMessage,
-        defaultSuggestions: args.defaultSuggestions,
-        vapiSettings: args.vapiSettings
-      })
-    }
+			.unique();
+
+		if (existingWidgetSettings) {
+			await ctx.db.patch(existingWidgetSettings._id, {
+				greetMessage: args.greetMessage,
+				defaultSuggestions: args.defaultSuggestions,
+				vapiSettings: args.vapiSettings,
+			});
+		} else {
+			await ctx.db.insert('widgetSettings', {
+				organizationId: orgId,
+				greetMessage: args.greetMessage,
+				defaultSuggestions: args.defaultSuggestions,
+				vapiSettings: args.vapiSettings,
+			});
+		}
 	},
 });
 
-
 export const getOne = query({
 	args: {},
-	handler: async (ctx, args) => {
+	handler: async (ctx) => {
 		const identity = await ctx.auth.getUserIdentity();
 
 		if (identity === null) {

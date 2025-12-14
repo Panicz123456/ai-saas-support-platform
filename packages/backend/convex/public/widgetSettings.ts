@@ -11,8 +11,8 @@ export const getByOrganizationId = query({
 			.withIndex('by_organization_id', (q) =>
 				q.eq('organizationId', args.organizationId)
 			)
-      .unique();
-    
-    return widgetSettings
-  },
+			.unique();
+
+		return widgetSettings;
+	},
 });

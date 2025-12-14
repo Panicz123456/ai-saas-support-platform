@@ -1,10 +1,9 @@
-import { v } from 'convex/values';
 import { createClerkClient } from '@clerk/backend';
-
-import { action,  } from '../_generated/server';
+import { v } from 'convex/values';
+import { action } from '../_generated/server';
 
 const clerkClient = createClerkClient({
-	secretKey: process.env.CLERK_SECRET_KEY,
+	secretKey: process.env.CLERK_SECRET_KEY || '',
 });
 
 export const validate = action({
@@ -16,10 +15,10 @@ export const validate = action({
 			organizationId: args.organizationId,
 		});
 
-		if (organization) { 
-			return {valid: true}
-		} else { 
-			return {valid: false, reason: "Organization not found"}
+		if (organization) {
+			return { valid: true };
+		} else {
+			return { valid: false, reason: 'Organization not valid' };
 		}
 	},
 });
