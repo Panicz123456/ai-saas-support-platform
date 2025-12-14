@@ -1,9 +1,8 @@
-import { ConvexError, v } from 'convex/values';
-
 import { mutation, query } from '../_generated/server';
+import { components, internal } from '../_generated/api';
+import { ConvexError, v } from 'convex/values';
 import { supportAgent } from '../system/ai/agents/supportAgent';
 import { MessageDoc, saveMessage } from '@convex-dev/agent';
-import { components } from '../_generated/api';
 import { paginationOptsValidator } from 'convex/server';
 
 export const getMany = query({
@@ -12,11 +11,12 @@ export const getMany = query({
 		paginationOpts: paginationOptsValidator,
 	},
 	handler: async (ctx, args) => {
-		const session = await ctx.db.get(args.contactSessionId);
-		if (!session || session.expiredAt < Date.now()) {
+		const contactSession = await ctx.db.get(args.contactSessionId);
+
+		if (!contactSession || contactSession.expiredAt < Date.now()) {
 			throw new ConvexError({
 				code: 'UNAUTHORIZED',
-				message: 'Invalid Session',
+				message: 'Invalid session',
 			});
 		}
 
@@ -28,12 +28,12 @@ export const getMany = query({
 			.order('desc')
 			.paginate(args.paginationOpts);
 
-		const conversationLastMessage = await Promise.all(
-			conversations.page.map(async (conversations) => {
+		const conversationsWithLastMessage = await Promise.all(
+			conversations.page.map(async (conversation) => {
 				let lastMessage: MessageDoc | null = null;
 
 				const messages = await supportAgent.listMessages(ctx, {
-					threadId: conversations.threadId,
+					threadId: conversation.threadId,
 					paginationOpts: { numItems: 1, cursor: null },
 				});
 
@@ -42,11 +42,11 @@ export const getMany = query({
 				}
 
 				return {
-					_id: conversations._id,
-					creationTime: conversations._creationTime,
-					status: conversations.status,
-					organizationId: conversations.organizationId,
-					threadId: conversations.threadId,
+					_id: conversation._id,
+					_creationTime: conversation._creationTime,
+					status: conversation.status,
+					organizationId: conversation.organizationId,
+					threadId: conversation.threadId,
 					lastMessage,
 				};
 			})
@@ -54,7 +54,7 @@ export const getMany = query({
 
 		return {
 			...conversations,
-			page: conversationLastMessage,
+			page: conversationsWithLastMessage,
 		};
 	},
 });
@@ -66,10 +66,11 @@ export const getOne = query({
 	},
 	handler: async (ctx, args) => {
 		const session = await ctx.db.get(args.contactSessionId);
+
 		if (!session || session.expiredAt < Date.now()) {
 			throw new ConvexError({
 				code: 'UNAUTHORIZED',
-				message: 'Invalid Session',
+				message: 'Invalid session',
 			});
 		}
 
@@ -77,7 +78,7 @@ export const getOne = query({
 
 		if (!conversation) {
 			throw new ConvexError({
-				code: 'UNAUTHORIZED',
+				code: 'NOT_FOUND',
 				message: 'Conversation not found',
 			});
 		}
@@ -85,7 +86,7 @@ export const getOne = query({
 		if (conversation.contactSessionId !== session._id) {
 			throw new ConvexError({
 				code: 'UNAUTHORIZED',
-				message: 'Incorrect Session',
+				message: 'Incorrect session',
 			});
 		}
 
@@ -115,9 +116,9 @@ export const create = mutation({
 		const widgetSettings = await ctx.db
 			.query('widgetSettings')
 			.withIndex('by_organization_id', (q) =>
-				q.eq("organizationId", session.organizationId)
+				q.eq('organizationId', args.organizationId)
 			)
-			.unique()
+			.unique();
 
 		const { threadId } = await supportAgent.createThread(ctx, {
 			userId: args.organizationId,
@@ -127,7 +128,8 @@ export const create = mutation({
 			threadId,
 			message: {
 				role: 'assistant',
-				content: widgetSettings?.greetMessage ||  'Hello, how can I help you today?',
+				content:
+					widgetSettings?.greetMessage || 'Hello, how can I help you today?',
 			},
 		});
 
