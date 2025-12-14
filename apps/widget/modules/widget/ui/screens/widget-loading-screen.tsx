@@ -13,6 +13,7 @@ import {
 	LoadingMessageAtom,
 	organizationIdAtom,
 	screenAtom,
+	vapiSecretsAtom,
 	widgetSettingsAtom,
 } from '@/modules/widget/atoms/widget-atoms';
 
@@ -27,11 +28,12 @@ export const WidgetLoadingScreen = ({
 	const [sessionValid, setSessionValid] = useState(false);
 
 	const loadingMessage = useAtomValue(LoadingMessageAtom);
-	const setWidgetSettings = useSetAtom(widgetSettingsAtom)
+	const setWidgetSettings = useSetAtom(widgetSettingsAtom);
 	const setOrganizationId = useSetAtom(organizationIdAtom);
 	const setLoadingMessage = useSetAtom(LoadingMessageAtom);
 	const setErrorMessage = useSetAtom(errorMessageAtom);
 	const setScreen = useSetAtom(screenAtom);
+	const setVapiSecrets = useSetAtom(vapiSecretsAtom);
 
 	const contactSessionId = useAtomValue(
 		contactSessionIdAtomFamily(organizationId || '')
@@ -122,22 +124,50 @@ export const WidgetLoadingScreen = ({
 	);
 
 	useEffect(() => {
-		if (step !== "settings") { 
+		if (step !== 'settings') {
 			return;
 		}
 
-		setLoadingMessage("Loading widget settings...")
+		setLoadingMessage('Loading widget settings...');
 
-		if (widgetSettings !== undefined) { 
-			setWidgetSettings(widgetSettings)
-			setStep("done")
+		if (widgetSettings !== undefined) {
+			setWidgetSettings(widgetSettings);
+			setStep('vapi');
 		}
+	}, [step, setLoadingMessage, setWidgetSettings, widgetSettings]);
+
+	// Step 4: load Vapi secret
+	const getVapiSecrets = useAction(api.public.secrets.getVapiSecrets);
+	useEffect(() => {
+		if (step !== 'vapi') {
+			return;
+		}
+
+		if (!organizationId) {
+			setErrorMessage("Organization ID is required")
+			setScreen("error")
+			return;
+		}
+
+		setLoadingMessage('Loading voice features...');
+		getVapiSecrets({ organizationId })
+			.then((secrets) => {
+				setVapiSecrets(secrets);
+				setStep("done")
+			})
+			.catch(() => {
+				setVapiSecrets(null);
+				setStep("done")
+			});
 	}, [
 		step,
+		organizationId,
 		setLoadingMessage,
-		setWidgetSettings,
-		widgetSettings,
-	])
+		getVapiSecrets,
+		setVapiSecrets,
+		setErrorMessage,
+		setScreen
+	]);
 
 	useEffect(() => {
 		if (step !== 'done') {

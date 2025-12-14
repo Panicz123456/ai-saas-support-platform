@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useMutation } from 'convex/react';
 import { useAtomValue, useSetAtom } from 'jotai';
-import { ChevronRightIcon, MessageSquareTextIcon } from 'lucide-react';
+import { ChevronRightIcon, MessageSquareTextIcon, MicIcon, PhoneIcon } from 'lucide-react';
 
 import { api } from '@workspace/backend/_generated/api';
 import { Button } from '@workspace/ui/components/button';
@@ -14,50 +14,54 @@ import {
 	contactSessionIdAtomFamily,
 	conversationIdAtom,
 	errorMessageAtom,
+	hasVapiSecretsAtom,
 	organizationIdAtom,
-	screenAtom
+	screenAtom,
+	widgetSettingsAtom,
 } from '@/modules/widget/atoms/widget-atoms';
 
 export const WidgetSelectionScreen = () => {
-	const setScreen = useSetAtom(screenAtom)
-	const setErrorMessage = useSetAtom(errorMessageAtom)
-	const setConversationId = useSetAtom(conversationIdAtom)
+	const setScreen = useSetAtom(screenAtom);
+	const setErrorMessage = useSetAtom(errorMessageAtom);
+	const setConversationId = useSetAtom(conversationIdAtom);
 
-	const organizationId = useAtomValue(organizationIdAtom)
+	const widgetSettings = useAtomValue(widgetSettingsAtom);
+	const hasVapiSecrets = useAtomValue(hasVapiSecretsAtom);
+	const organizationId = useAtomValue(organizationIdAtom);
 	const contactSessionId = useAtomValue(
-		contactSessionIdAtomFamily(organizationId || "")
-	)
+		contactSessionIdAtomFamily(organizationId || '')
+	);
 
-	const createConverasation = useMutation(api.public.conversation.create)
-	const [isPending,setIsPending] = useState(false) 
+	const createConversation = useMutation(api.public.conversation.create);
+	const [isPending, setIsPending] = useState(false);
 
-	const handleNewConversation = async () => { 
-		if (!contactSessionId) { 
-			setScreen("auth")
+	const handleNewConversation = async () => {
+		if (!contactSessionId) {
+			setScreen('auth');
 			return;
 		}
-		
-		if (!organizationId) { 
-			setScreen("error")
-			setErrorMessage("Organization not found")
+
+		if (!organizationId) {
+			setScreen('error');
+			setErrorMessage('Organization not found');
 			return;
 		}
-		
-		setIsPending(true)
+
+		setIsPending(true);
 		try {
-			const conversationId = await createConverasation({
+			const conversationId = await createConversation({
 				contactSessionId,
-				organizationId
+				organizationId,
 			});
 
-			setConversationId(conversationId)
-			setScreen("chat")
+			setConversationId(conversationId);
+			setScreen('chat');
 		} catch {
-			setScreen("auth")
-		} finally { 
-			setIsPending(false)
+			setScreen('auth');
+		} finally {
+			setIsPending(false);
 		}
-	}
+	};
 
 	return (
 		<>
@@ -69,17 +73,45 @@ export const WidgetSelectionScreen = () => {
 			</WidgetHeader>
 			<div className="flex flex-1 flex-col gap-y-4 p-4 overflow-y-auto">
 				<Button
-					className='h-16 w-full justify-between'
+					className="h-16 w-full justify-between"
 					variant="outline"
 					onClick={handleNewConversation}
 					disabled={isPending}
 				>
-					<div className='flex items-center gap-x-2'>
-						<MessageSquareTextIcon className='size-4' />
+					<div className="flex items-center gap-x-2">
+						<MessageSquareTextIcon className="size-4" />
 						<span>Start Chat</span>
 					</div>
-					<ChevronRightIcon className='size-4' />
+					<ChevronRightIcon className="size-4" />
 				</Button>
+				{hasVapiSecrets && widgetSettings?.vapiSettings.assistantId && (
+					<Button
+						className="h-16 w-full justify-between"
+						variant="outline"
+						onClick={() => setScreen("voice")}
+						disabled={isPending}
+					>
+						<div className="flex items-center gap-x-2">
+							<MicIcon className="size-4" />
+							<span>Start voice call</span>
+						</div>
+						<ChevronRightIcon className="size-4" />
+					</Button>
+				)}
+				{hasVapiSecrets && widgetSettings?.vapiSettings.phoneNumber && (
+					<Button
+						className="h-16 w-full justify-between"
+						variant="outline"
+						onClick={() => setScreen("contact")}
+						disabled={isPending}
+					>
+						<div className="flex items-center gap-x-2">
+							<PhoneIcon className="size-4" />
+							<span>Call us</span>
+						</div>
+						<ChevronRightIcon className="size-4" />
+					</Button>
+				)}
 			</div>
 			<WidgetFooter />
 		</>
