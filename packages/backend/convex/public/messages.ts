@@ -3,26 +3,26 @@ import { action, query } from '../_generated/server';
 import { components, internal } from '../_generated/api';
 import { supportAgent } from '../system/ai/agents/supportAgent';
 import { paginationOptsValidator } from 'convex/server';
-import { escalateConversationTool } from '../system/ai/tools/escalateConversation';
-import { resolveConversationTool } from '../system/ai/tools/resolveConversation';
+import { escalateConversation } from '../system/ai/tools/escalateConversation';
+import { resolveConversation } from '../system/ai/tools/resolveConversation';
 import { saveMessage } from '@convex-dev/agent';
-import { searchTool } from '../system/ai/tools/search';
+import { search } from '../system/ai/tools/search';
 
 export const create = action({
 	args: {
 		prompt: v.string(),
 		threadId: v.string(),
-		contactSessionId: v.id('contactSession'),
+		contactSessionId: v.id('contactSessions'),
 	},
 	handler: async (ctx, args) => {
 		const contactSession = await ctx.runQuery(
-			internal.system.contactSession.getOne,
+			internal.system.contactSessions.getOne,
 			{
 				contactSessionId: args.contactSessionId,
 			}
 		);
 
-		if (!contactSession || contactSession.expiredAt < Date.now()) {
+		if (!contactSession || contactSession.expiresAt < Date.now()) {
 			throw new ConvexError({
 				code: 'UNAUTHORIZED',
 				message: 'Invalid session',
@@ -30,7 +30,7 @@ export const create = action({
 		}
 
 		const conversation = await ctx.runQuery(
-			internal.system.conversation.getByThreadId,
+			internal.system.conversations.getByThreadId,
 			{
 				threadId: args.threadId,
 			}
@@ -60,9 +60,9 @@ export const create = action({
 				{
 					prompt: args.prompt,
 					tools: {
-						escalateConversationTool,
-						resolveConversationTool,
-						searchTool,
+						escalateConversationTool: escalateConversation,
+						resolveConversationTool: resolveConversation,
+						searchTool: search,
 					},
 				}
 			);
@@ -79,12 +79,12 @@ export const getMany = query({
 	args: {
 		threadId: v.string(),
 		paginationOpts: paginationOptsValidator,
-		contactSessionId: v.id('contactSession'),
+		contactSessionId: v.id('contactSessions'),
 	},
 	handler: async (ctx, args) => {
 		const contactSession = await ctx.db.get(args.contactSessionId);
 
-		if (!contactSession || contactSession.expiredAt < Date.now()) {
+		if (!contactSession || contactSession.expiresAt < Date.now()) {
 			throw new ConvexError({
 				code: 'UNAUTHORIZED',
 				message: 'Invalid session',

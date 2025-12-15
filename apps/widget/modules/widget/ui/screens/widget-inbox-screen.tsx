@@ -1,23 +1,21 @@
 'use client';
 
-import { ArrowLeftIcon } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
-import { usePaginatedQuery } from 'convex/react';
 import { useAtomValue, useSetAtom } from 'jotai';
-
-import { api } from '@workspace/backend/_generated/api';
-import { Button } from '@workspace/ui/components/button';
-import { useInfiniteScroll } from '@workspace/ui/hooks/use-infinite-scroll';
-import { ConversationStatusIcon } from '@workspace/ui/components/conversation-status-icon';
-
-import { WidgetFooter } from '@/modules/widget/ui/components/widget-footer';
-import { WidgetHeader } from '@/modules/widget/ui/components/widget-header';
+import { formatDistanceToNow } from 'date-fns';
+import { ArrowLeftIcon } from 'lucide-react';
 import {
 	contactSessionIdAtomFamily,
 	conversationIdAtom,
 	organizationIdAtom,
 	screenAtom,
 } from '@/modules/widget/atoms/widget-atoms';
+import { ConversationStatusIcon } from '@workspace/ui/components/conversation-status-icon';
+import { WidgetHeader } from '@/modules/widget/ui/components/widget-header';
+import { WidgetFooter } from '../components/widget-footer';
+import { Button } from '@workspace/ui/components/button';
+import { usePaginatedQuery } from 'convex/react';
+import { api } from '@workspace/backend/_generated/api';
+import { useInfiniteScroll } from '@workspace/ui/hooks/use-infinite-scroll';
 import { InfiniteScrollTrigger } from '@workspace/ui/components/infinite-scroll-trigger';
 
 export const WidgetInboxScreen = () => {
@@ -30,7 +28,7 @@ export const WidgetInboxScreen = () => {
 	);
 
 	const conversations = usePaginatedQuery(
-		api.public.conversation.getMany,
+		api.public.conversations.getMany,
 		contactSessionId
 			? {
 					contactSessionId,
@@ -41,7 +39,7 @@ export const WidgetInboxScreen = () => {
 		}
 	);
 
-	const { canLoadMore, handleLoadMore, isLoadingMore, topElementRef } =
+	const { topElementRef, handleLoadMore, canLoadMore, isLoadingMore } =
 		useInfiniteScroll({
 			status: conversations.status,
 			loadMore: conversations.loadMore,
@@ -64,7 +62,7 @@ export const WidgetInboxScreen = () => {
 			</WidgetHeader>
 			<div className="flex flex-1 flex-col gap-y-2 p-4 overflow-y-auto">
 				{conversations?.results.length > 0 &&
-					conversations.results.map((conversation) => (
+					conversations?.results.map((conversation) => (
 						<Button
 							className="h-20 w-full justify-between"
 							key={conversation._id}

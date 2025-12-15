@@ -1,15 +1,7 @@
-import { toast } from 'sonner';
-import { useForm } from 'react-hook-form';
-import { useMutation } from 'convex/react';
 import { zodResolver } from '@hookform/resolvers/zod';
-
-import { Input } from '@workspace/ui/components/input';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import { Button } from '@workspace/ui/components/button';
-import { Textarea } from '@workspace/ui/components/textarea';
-import { Separator } from '@workspace/ui/components/separator';
-import { api } from '@workspace/backend/_generated/api';
-import { Doc } from '@workspace/backend/_generated/dataModel';
-import { widgetSettingsSchema, widgetSettingsSchemaType } from '@/modules/customization/schema';
 import {
 	Card,
 	CardContent,
@@ -26,7 +18,15 @@ import {
 	FormLabel,
 	FormMessage,
 } from '@workspace/ui/components/form';
-import { VapiFormField } from '@/modules/customization/ui/components/vapi-form-field';
+import { Input } from '@workspace/ui/components/input';
+import { Separator } from '@workspace/ui/components/separator';
+import { Textarea } from '@workspace/ui/components/textarea';
+import { Doc } from '@workspace/backend/_generated/dataModel';
+import { useMutation } from 'convex/react';
+import { api } from '@workspace/backend/_generated/api';
+import { FormSchema } from '../../types';
+import { widgetSettingsSchema } from '@/modules/customization/schema';
+import { VapiFormFields } from '@/modules/customization/ui/components/vapi-form-field';
 
 type WidgetSettings = Doc<'widgetSettings'>;
 
@@ -41,10 +41,10 @@ export const CustomizationForm = ({
 }: CustomizationFormProps) => {
 	const upsertWidgetSettings = useMutation(api.private.widgetSettings.upsert);
 
-	const form = useForm<widgetSettingsSchemaType>({
+	const form = useForm<FormSchema>({
 		resolver: zodResolver(widgetSettingsSchema),
 		defaultValues: {
-			greenMessage:
+			greetMessage:
 				initialData?.greetMessage || 'Hi! How can I help you today?',
 			defaultSuggestions: {
 				suggestion1: initialData?.defaultSuggestions.suggestion1 || '',
@@ -58,7 +58,7 @@ export const CustomizationForm = ({
 		},
 	});
 
-	const onSubmit = async (values: widgetSettingsSchemaType) => {
+	const onSubmit = async (values: FormSchema) => {
 		try {
 			const vapiSettings: WidgetSettings['vapiSettings'] = {
 				assistantId:
@@ -72,7 +72,7 @@ export const CustomizationForm = ({
 			};
 
 			await upsertWidgetSettings({
-				greetMessage: values.greenMessage,
+				greetMessage: values.greetMessage,
 				defaultSuggestions: values.defaultSuggestions,
 				vapiSettings,
 			});
@@ -97,7 +97,7 @@ export const CustomizationForm = ({
 					<CardContent className="space-y-6">
 						<FormField
 							control={form.control}
-							name="greenMessage"
+							name="greetMessage"
 							render={({ field }) => (
 								<FormItem>
 									<FormLabel>Greeting Message</FormLabel>
@@ -190,7 +190,7 @@ export const CustomizationForm = ({
 							</CardDescription>
 						</CardHeader>
 						<CardContent className="space-y-6">
-							<VapiFormField form={form} />
+							<VapiFormFields form={form} />
 						</CardContent>
 					</Card>
 				)}

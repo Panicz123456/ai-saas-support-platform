@@ -2,8 +2,7 @@
 
 import { useMutation } from 'convex/react';
 import { useState } from 'react';
-
-import { api } from '@workspace/backend/_generated/api';
+import { Button } from '@workspace/ui/components/button';
 import {
 	Dialog,
 	DialogContent,
@@ -12,8 +11,8 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from '@workspace/ui/components/dialog';
-import { PublicFile } from '@workspace/backend/private/files';
-import { Button } from '@workspace/ui/components/button';
+import { api } from '@workspace/backend/_generated/api';
+import type { PublicFile } from '@workspace/backend/private/files';
 
 interface DeleteFileDialogProps {
 	open: boolean;
@@ -32,11 +31,13 @@ export const DeleteFileDialog = ({
 	const [isDeleting, setIsDeleting] = useState(false);
 
 	const handleDelete = async () => {
-		if (!file) return;
+		if (!file) {
+			return;
+		}
+
 		setIsDeleting(true);
 		try {
 			await deleteFile({ entryId: file.id });
-
 			onDeleted?.();
 			onOpenChange(false);
 		} catch (error) {
@@ -47,7 +48,7 @@ export const DeleteFileDialog = ({
 	};
 
 	return (
-		<Dialog open={open} onOpenChange={onOpenChange}>
+		<Dialog onOpenChange={onOpenChange} open={open}>
 			<DialogContent className="sm:max-w-md">
 				<DialogHeader>
 					<DialogTitle>Delete File</DialogTitle>
@@ -77,9 +78,9 @@ export const DeleteFileDialog = ({
 						Cancel
 					</Button>
 					<Button
-						disabled={isDeleting}
-            onClick={handleDelete}
-            variant="destructive"
+						disabled={isDeleting || !file}
+						onClick={handleDelete}
+						variant="destructive"
 					>
 						{isDeleting ? 'Deleting...' : 'Delete'}
 					</Button>

@@ -7,13 +7,13 @@ import { paginationOptsValidator } from 'convex/server';
 
 export const getMany = query({
 	args: {
-		contactSessionId: v.id('contactSession'),
+		contactSessionId: v.id('contactSessions'),
 		paginationOpts: paginationOptsValidator,
 	},
 	handler: async (ctx, args) => {
 		const contactSession = await ctx.db.get(args.contactSessionId);
 
-		if (!contactSession || contactSession.expiredAt < Date.now()) {
+		if (!contactSession || contactSession.expiresAt < Date.now()) {
 			throw new ConvexError({
 				code: 'UNAUTHORIZED',
 				message: 'Invalid session',
@@ -21,7 +21,7 @@ export const getMany = query({
 		}
 
 		const conversations = await ctx.db
-			.query('conversation')
+			.query('conversations')
 			.withIndex('by_contact_session_id', (q) =>
 				q.eq('contactSessionId', args.contactSessionId)
 			)
@@ -61,13 +61,13 @@ export const getMany = query({
 
 export const getOne = query({
 	args: {
-		conversationId: v.id('conversation'),
-		contactSessionId: v.id('contactSession'),
+		conversationId: v.id('conversations'),
+		contactSessionId: v.id('contactSessions'),
 	},
 	handler: async (ctx, args) => {
 		const session = await ctx.db.get(args.contactSessionId);
 
-		if (!session || session.expiredAt < Date.now()) {
+		if (!session || session.expiresAt < Date.now()) {
 			throw new ConvexError({
 				code: 'UNAUTHORIZED',
 				message: 'Invalid session',
@@ -101,12 +101,12 @@ export const getOne = query({
 export const create = mutation({
 	args: {
 		organizationId: v.string(),
-		contactSessionId: v.id('contactSession'),
+		contactSessionId: v.id('contactSessions'),
 	},
 	handler: async (ctx, args) => {
 		const session = await ctx.db.get(args.contactSessionId);
 
-		if (!session || session.expiredAt < Date.now()) {
+		if (!session || session.expiresAt < Date.now()) {
 			throw new ConvexError({
 				code: 'UNAUTHORIZED',
 				message: 'Invalid session',
@@ -133,7 +133,7 @@ export const create = mutation({
 			},
 		});
 
-		const conversationId = await ctx.db.insert('conversation', {
+		const conversationId = await ctx.db.insert('conversations', {
 			contactSessionId: session._id,
 			status: 'unresolved',
 			organizationId: args.organizationId,

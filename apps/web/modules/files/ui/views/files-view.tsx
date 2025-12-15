@@ -1,20 +1,11 @@
 'use client';
 
-import { useState } from 'react';
-import { usePaginatedQuery } from 'convex/react';
 import {
-	FileIcon,
-	MoreHorizontalIcon,
-	PlusIcon,
-	TrashIcon,
-} from 'lucide-react';
-
-import { Badge } from '@workspace/ui/components/badge';
-import { api } from '@workspace/backend/_generated/api';
-import { Button } from '@workspace/ui/components/button';
-import type { PublicFile } from '@workspace/backend/private/files';
-import { useInfiniteScroll } from '@workspace/ui/hooks/use-infinite-scroll';
-import { InfiniteScrollTrigger } from '@workspace/ui/components/infinite-scroll-trigger';
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from '@workspace/ui/components/dropdown-menu';
 import {
 	Table,
 	TableBody,
@@ -23,14 +14,22 @@ import {
 	TableHeader,
 	TableRow,
 } from '@workspace/ui/components/table';
+import { Badge } from '@workspace/ui/components/badge';
+import { useInfiniteScroll } from '@workspace/ui/hooks/use-infinite-scroll';
+import { InfiniteScrollTrigger } from '@workspace/ui/components/infinite-scroll-trigger';
+import { usePaginatedQuery } from 'convex/react';
+import { api } from '@workspace/backend/_generated/api';
+import type { PublicFile } from '@workspace/backend/private/files';
+import { Button } from '@workspace/ui/components/button';
 import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from '@workspace/ui/components/dropdown-menu';
-import { UploadDialog } from '@/modules/files/ui/components/upload-dialog';
-import { DeleteFileDialog } from '@/modules/files/ui/components/delete-file-dialog';
+	FileIcon,
+	MoreHorizontalIcon,
+	PlusIcon,
+	TrashIcon,
+} from 'lucide-react';
+import { UploadDialog } from '../components/upload-dialog';
+import { useState } from 'react';
+import { DeleteFileDialog } from '../components/delete-file-dialog';
 
 export const FilesView = () => {
 	const files = usePaginatedQuery(
@@ -42,11 +41,11 @@ export const FilesView = () => {
 	);
 
 	const {
-		canLoadMore,
-		isLoadingMore,
-		isLoadingFirstPage,
-		handleLoadMore,
 		topElementRef,
+		handleLoadMore,
+		canLoadMore,
+		isLoadingFirstPage,
+		isLoadingMore,
 	} = useInfiniteScroll({
 		status: files.status,
 		loadMore: files.loadMore,
@@ -63,28 +62,27 @@ export const FilesView = () => {
 	};
 
 	const handleFileDeleted = () => {
-		setSelectedFile(null)
+		setSelectedFile(null);
 	};
+
 	return (
 		<>
 			<DeleteFileDialog
-				open={deleteDialogOpen}
 				onOpenChange={setDeleteDialogOpen}
+				open={deleteDialogOpen}
 				file={selectedFile}
 				onDeleted={handleFileDeleted}
 			/>
 			<UploadDialog
-				open={uploadDialogOpen}
 				onOpenChange={setUploadDialogOpen}
+				open={uploadDialogOpen}
 			/>
 			<div className="flex min-h-screen flex-col bg-muted p-8">
 				<div className="mx-auto w-full max-w-screen-md">
 					<div className="space-y-2">
-						<h1 className="text-2xl md:text-4xl font-semibold">
-							Knowladge Base
-						</h1>
+						<h1 className="text-2xl md:text-4xl">Knowledge Base</h1>
 						<p className="text-muted-foreground">
-							Upload and manage documents for your AI assistent
+							Upload and manage documents for your AI assistant
 						</p>
 					</div>
 
@@ -144,7 +142,7 @@ export const FilesView = () => {
 											<TableCell className="px-6 py-4 text-muted-foreground">
 												{file.size}
 											</TableCell>
-											<TableCell className="px-6 py-4 text-muted-foreground">
+											<TableCell className="px-6 py-4">
 												<DropdownMenu>
 													<DropdownMenuTrigger asChild>
 														<Button

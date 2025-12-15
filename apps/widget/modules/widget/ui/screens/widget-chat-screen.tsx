@@ -1,28 +1,13 @@
 'use client';
 
-import { useMemo } from 'react';
-import { useForm } from 'react-hook-form';
-import { useAtomValue, useSetAtom } from 'jotai';
-import { useAction, useQuery } from 'convex/react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { ArrowLeftIcon, MenuIcon } from 'lucide-react';
+import { WidgetHeader } from '@/modules/widget/ui/components/widget-header';
 import { toUIMessages, useThreadMessages } from '@convex-dev/agent/react';
-
+import { zodResolver } from '@hookform/resolvers/zod';
 import { api } from '@workspace/backend/_generated/api';
-import { Button } from '@workspace/ui/components/button';
-import { Form, FormField } from '@workspace/ui/components/form';
-import { AIResponse } from '@workspace/ui/components/ai/response';
-import { DicebearAvatar } from '@workspace/ui/components/dicebear-avatar';
-import { useInfiniteScroll } from '@workspace/ui/hooks/use-infinite-scroll';
-import { InfiniteScrollTrigger } from '@workspace/ui/components/infinite-scroll-trigger';
 import {
 	AIConversation,
 	AIConversationContent,
 } from '@workspace/ui/components/ai/conversation';
-import {
-	AIMessage,
-	AIMessageContent,
-} from '@workspace/ui/components/ai/message';
 import {
 	AIInput,
 	AIInputSubmit,
@@ -31,19 +16,37 @@ import {
 	AIInputTools,
 } from '@workspace/ui/components/ai/input';
 import {
+	AIMessage,
+	AIMessageContent,
+} from '@workspace/ui/components/ai/message';
+import { AIResponse } from '@workspace/ui/components/ai/response';
+import {
 	AISuggestion,
 	AISuggestions,
 } from '@workspace/ui/components/ai/suggestion';
-
-import { WidgetHeader } from '@/modules/widget/ui/components/widget-header';
-import { chatFormSchema, chatFormSchemaType } from '@/modules/widget/ui/schema';
+import { Button } from '@workspace/ui/components/button';
+import { DicebearAvatar } from '@workspace/ui/components/dicebear-avatar';
+import { Form, FormField } from '@workspace/ui/components/form';
+import { InfiniteScrollTrigger } from '@workspace/ui/components/infinite-scroll-trigger';
+import { useInfiniteScroll } from '@workspace/ui/hooks/use-infinite-scroll';
+import { useAction, useQuery } from 'convex/react';
+import { useAtomValue, useSetAtom } from 'jotai';
+import { ArrowLeftIcon, MenuIcon } from 'lucide-react';
+import { useMemo } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 import {
 	contactSessionIdAtomFamily,
 	conversationIdAtom,
 	organizationIdAtom,
 	screenAtom,
 	widgetSettingsAtom,
-} from '@/modules/widget/atoms/widget-atoms';
+} from '../../atoms/widget-atoms';
+import { Meera_Inimai } from 'next/font/google';
+
+const formSchema = z.object({
+	message: z.string().min(1, 'Message is required'),
+});
 
 export const WidgetChatScreen = () => {
 	const setScreen = useSetAtom(screenAtom);
@@ -56,12 +59,16 @@ export const WidgetChatScreen = () => {
 		contactSessionIdAtomFamily(organizationId || '')
 	);
 
+	const onBack = () => {
+		setConversationId(null);
+		setScreen('selection');
+	};
+
 	const suggestions = useMemo(() => {
 		if (!widgetSettings) {
 			return [];
 		}
 
-		// change this to array
 		return Object.keys(widgetSettings.defaultSuggestions).map((key) => {
 			return widgetSettings.defaultSuggestions[
 				key as keyof typeof widgetSettings.defaultSuggestions
@@ -70,7 +77,7 @@ export const WidgetChatScreen = () => {
 	}, [widgetSettings]);
 
 	const conversation = useQuery(
-		api.public.conversation.getOne,
+		api.public.conversations.getOne,
 		conversationId && contactSessionId
 			? {
 					conversationId,
@@ -87,27 +94,25 @@ export const WidgetChatScreen = () => {
 					contactSessionId,
 				}
 			: 'skip',
-		{
-			initialNumItems: 10,
-		}
+		{ initialNumItems: 10 }
 	);
 
-	const { canLoadMore, handleLoadMore, isLoadingMore, topElementRef } =
+	const { topElementRef, handleLoadMore, canLoadMore, isLoadingMore } =
 		useInfiniteScroll({
 			status: messages.status,
 			loadMore: messages.loadMore,
 			loadSize: 10,
 		});
 
-	const form = useForm<chatFormSchemaType>({
-		resolver: zodResolver(chatFormSchema),
+	const form = useForm<z.infer<typeof formSchema>>({
+		resolver: zodResolver(formSchema),
 		defaultValues: {
 			message: '',
 		},
 	});
 
 	const createMessage = useAction(api.public.messages.create);
-	const onSubmit = async (values: chatFormSchemaType) => {
+	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		if (!conversation || !contactSessionId) {
 			return;
 		}
@@ -125,14 +130,7 @@ export const WidgetChatScreen = () => {
 		<>
 			<WidgetHeader className="flex items-center justify-between">
 				<div className="flex items-center gap-x-2">
-					<Button
-						onClick={() => {
-							setScreen('selection');
-							setConversationId(null);
-						}}
-						size="icon"
-						variant="transparent"
-					>
+					<Button onClick={onBack} size="icon" variant="transparent">
 						<ArrowLeftIcon />
 					</Button>
 					<p>Chat</p>
@@ -171,11 +169,12 @@ export const WidgetChatScreen = () => {
 				</AIConversationContent>
 			</AIConversation>
 			{toUIMessages(messages.results ?? [])?.length === 1 && (
-				<AISuggestions className="flex w-full items-start p-2">
+				<AISuggestions className="flex w-full flex-col items-end p-2">
 					{suggestions.map((suggestion) => {
 						if (!suggestion) {
 							return null;
 						}
+
 						return (
 							<AISuggestion
 								key={suggestion}
@@ -200,8 +199,8 @@ export const WidgetChatScreen = () => {
 				>
 					<FormField
 						control={form.control}
-						name="message"
 						disabled={conversation?.status === 'resolved'}
+						name="message"
 						render={({ field }) => (
 							<AIInputTextarea
 								disabled={conversation?.status === 'resolved'}
@@ -214,7 +213,7 @@ export const WidgetChatScreen = () => {
 								}}
 								placeholder={
 									conversation?.status === 'resolved'
-										? 'This conversation has been resolved'
+										? 'This conversation has been resolved.'
 										: 'Type your message...'
 								}
 								value={field.value}

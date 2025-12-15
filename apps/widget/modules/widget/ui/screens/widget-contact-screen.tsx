@@ -10,7 +10,7 @@ export const WidgetContactScreen = () => {
 	const setScreen = useSetAtom(screenAtom);
 	const widgetSettings = useAtomValue(widgetSettingsAtom);
 
-	const phoneNumber = widgetSettings?.vapiSettings.phoneNumber;
+	const phoneNumber = widgetSettings?.vapiSettings?.phoneNumber;
 
 	const [copied, setCopied] = useState(false);
 	const handleCopy = async () => {

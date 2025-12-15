@@ -14,9 +14,7 @@ export default defineSchema({
 			assistantId: v.optional(v.string()),
 			phoneNumber: v.optional(v.string()),
 		}),
-	})
-	.index("by_organization_id", ["organizationId"])
-	,
+	}).index('by_organization_id', ['organizationId']),
 	plugins: defineTable({
 		organizationId: v.string(),
 		service: v.union(v.literal('vapi')),
@@ -24,10 +22,10 @@ export default defineSchema({
 	})
 		.index('by_organization_id', ['organizationId'])
 		.index('by_organization_id_and_service', ['organizationId', 'service']),
-	conversation: defineTable({
+	conversations: defineTable({
 		threadId: v.string(),
 		organizationId: v.string(),
-		contactSessionId: v.id('contactSession'),
+		contactSessionId: v.id('contactSessions'),
 		status: v.union(
 			v.literal('unresolved'),
 			v.literal('escalated'),
@@ -38,11 +36,11 @@ export default defineSchema({
 		.index('by_contact_session_id', ['contactSessionId'])
 		.index('by_thread_id', ['threadId'])
 		.index('by_status_and_organization_id', ['status', 'organizationId']),
-	contactSession: defineTable({
+	contactSessions: defineTable({
 		name: v.string(),
 		email: v.string(),
 		organizationId: v.string(),
-		expiredAt: v.number(),
+		expiresAt: v.number(),
 		metadata: v.optional(
 			v.object({
 				userAgent: v.optional(v.string()),
@@ -61,7 +59,7 @@ export default defineSchema({
 		),
 	})
 		.index('by_organization_id', ['organizationId'])
-		.index('by_expired_at', ['expiredAt']),
+		.index('by_expires_at', ['expiresAt']),
 	users: defineTable({
 		name: v.string(),
 	}),

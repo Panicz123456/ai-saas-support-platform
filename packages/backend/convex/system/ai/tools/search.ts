@@ -7,7 +7,7 @@ import { supportAgent } from '../agents/supportAgent';
 import rag from '../rag';
 import { SEARCH_INTERPRETER_PROMPT } from '../constants';
 
-export const searchTool = createTool({
+export const search = createTool({
 	description:
 		'Search the knowledge base for relevant information to help answer user questions',
 	args: z.object({
@@ -19,7 +19,7 @@ export const searchTool = createTool({
 		}
 
 		const conversation = await ctx.runQuery(
-			internal.system.conversation.getByThreadId,
+			internal.system.conversations.getByThreadId,
 			{ threadId: ctx.threadId }
 		);
 
