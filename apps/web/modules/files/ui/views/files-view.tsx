@@ -1,5 +1,20 @@
 'use client';
 
+import { useState } from 'react';
+import { usePaginatedQuery } from 'convex/react';
+import {
+	FileIcon,
+	MoreHorizontalIcon,
+	PlusIcon,
+	TrashIcon,
+} from 'lucide-react';
+
+import { Badge } from '@workspace/ui/components/badge';
+import { api } from '@workspace/backend/_generated/api';
+import { Button } from '@workspace/ui/components/button';
+import type { PublicFile } from '@workspace/backend/private/files';
+import { useInfiniteScroll } from '@workspace/ui/hooks/use-infinite-scroll';
+import { InfiniteScrollTrigger } from '@workspace/ui/components/infinite-scroll-trigger';
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -14,21 +29,8 @@ import {
 	TableHeader,
 	TableRow,
 } from '@workspace/ui/components/table';
-import { Badge } from '@workspace/ui/components/badge';
-import { useInfiniteScroll } from '@workspace/ui/hooks/use-infinite-scroll';
-import { InfiniteScrollTrigger } from '@workspace/ui/components/infinite-scroll-trigger';
-import { usePaginatedQuery } from 'convex/react';
-import { api } from '@workspace/backend/_generated/api';
-import type { PublicFile } from '@workspace/backend/private/files';
-import { Button } from '@workspace/ui/components/button';
-import {
-	FileIcon,
-	MoreHorizontalIcon,
-	PlusIcon,
-	TrashIcon,
-} from 'lucide-react';
+
 import { UploadDialog } from '../components/upload-dialog';
-import { useState } from 'react';
 import { DeleteFileDialog } from '../components/delete-file-dialog';
 
 export const FilesView = () => {

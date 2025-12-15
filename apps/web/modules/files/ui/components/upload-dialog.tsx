@@ -1,7 +1,12 @@
 'use client';
 
-import { useAction } from 'convex/react';
 import { useState } from 'react';
+import { useAction } from 'convex/react';
+
+import { Input } from '@workspace/ui/components/input';
+import { Label } from '@workspace/ui/components/label';
+import { api } from '@workspace/backend/_generated/api';
+import { Button } from '@workspace/ui/components/button';
 import {
 	Dialog,
 	DialogContent,
@@ -10,15 +15,11 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from '@workspace/ui/components/dialog';
-import { Input } from '@workspace/ui/components/input';
-import { Label } from '@workspace/ui/components/label';
-import { Button } from '@workspace/ui/components/button';
 import {
 	Dropzone,
 	DropzoneContent,
 	DropzoneEmptyState,
 } from '@workspace/ui/components/dropzone';
-import { api } from '@workspace/backend/_generated/api';
 
 interface UploadDialogProps {
 	open: boolean;

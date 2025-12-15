@@ -1,9 +1,22 @@
 'use client';
 
-import { WidgetHeader } from '@/modules/widget/ui/components/widget-header';
-import { toUIMessages, useThreadMessages } from '@convex-dev/agent/react';
+import { z } from 'zod';
+import { useMemo } from 'react';
+import { useForm } from 'react-hook-form';
+import { useAtomValue, useSetAtom } from 'jotai';
+import { useAction, useQuery } from 'convex/react';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { ArrowLeftIcon, MenuIcon } from 'lucide-react';
+import { toUIMessages, useThreadMessages } from '@convex-dev/agent/react';
+
 import { api } from '@workspace/backend/_generated/api';
+import { Button } from '@workspace/ui/components/button';
+import { Form, FormField } from '@workspace/ui/components/form';
+import { AIResponse } from '@workspace/ui/components/ai/response';
+import { DicebearAvatar } from '@workspace/ui/components/dicebear-avatar';
+import { useInfiniteScroll } from '@workspace/ui/hooks/use-infinite-scroll';
+import { WidgetHeader } from '@/modules/widget/ui/components/widget-header';
+import { InfiniteScrollTrigger } from '@workspace/ui/components/infinite-scroll-trigger';
 import {
 	AIConversation,
 	AIConversationContent,
@@ -19,22 +32,11 @@ import {
 	AIMessage,
 	AIMessageContent,
 } from '@workspace/ui/components/ai/message';
-import { AIResponse } from '@workspace/ui/components/ai/response';
 import {
 	AISuggestion,
 	AISuggestions,
 } from '@workspace/ui/components/ai/suggestion';
-import { Button } from '@workspace/ui/components/button';
-import { DicebearAvatar } from '@workspace/ui/components/dicebear-avatar';
-import { Form, FormField } from '@workspace/ui/components/form';
-import { InfiniteScrollTrigger } from '@workspace/ui/components/infinite-scroll-trigger';
-import { useInfiniteScroll } from '@workspace/ui/hooks/use-infinite-scroll';
-import { useAction, useQuery } from 'convex/react';
-import { useAtomValue, useSetAtom } from 'jotai';
-import { ArrowLeftIcon, MenuIcon } from 'lucide-react';
-import { useMemo } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+
 import {
 	contactSessionIdAtomFamily,
 	conversationIdAtom,
@@ -42,7 +44,6 @@ import {
 	screenAtom,
 	widgetSettingsAtom,
 } from '../../atoms/widget-atoms';
-import { Meera_Inimai } from 'next/font/google';
 
 const formSchema = z.object({
 	message: z.string().min(1, 'Message is required'),

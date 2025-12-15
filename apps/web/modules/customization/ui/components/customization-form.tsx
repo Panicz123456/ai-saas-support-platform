@@ -1,7 +1,16 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import { useForm } from 'react-hook-form';
+import { useMutation } from 'convex/react';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+import { Input } from '@workspace/ui/components/input';
+import { api } from '@workspace/backend/_generated/api';
 import { Button } from '@workspace/ui/components/button';
+import { Textarea } from '@workspace/ui/components/textarea';
+import { Separator } from '@workspace/ui/components/separator';
+import { Doc } from '@workspace/backend/_generated/dataModel';
+import { widgetSettingsSchema } from '@/modules/customization/schema';
+import { VapiFormFields } from '@/modules/customization/ui/components/vapi-form-field';
 import {
 	Card,
 	CardContent,
@@ -18,15 +27,9 @@ import {
 	FormLabel,
 	FormMessage,
 } from '@workspace/ui/components/form';
-import { Input } from '@workspace/ui/components/input';
-import { Separator } from '@workspace/ui/components/separator';
-import { Textarea } from '@workspace/ui/components/textarea';
-import { Doc } from '@workspace/backend/_generated/dataModel';
-import { useMutation } from 'convex/react';
-import { api } from '@workspace/backend/_generated/api';
+
 import { FormSchema } from '../../types';
-import { widgetSettingsSchema } from '@/modules/customization/schema';
-import { VapiFormFields } from '@/modules/customization/ui/components/vapi-form-field';
+
 
 type WidgetSettings = Doc<'widgetSettings'>;
 

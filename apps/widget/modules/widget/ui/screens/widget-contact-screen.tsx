@@ -1,10 +1,12 @@
+import Link from 'next/link';
+import { useState } from 'react';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { ArrowLeftIcon, CheckIcon, CopyIcon, PhoneIcon } from 'lucide-react';
+
 import { Button } from '@workspace/ui/components/button';
 import { WidgetHeader } from '@/modules/widget/ui/components/widget-header';
-import { useAtomValue, useSetAtom } from 'jotai';
+
 import { screenAtom, widgetSettingsAtom } from '../../atoms/widget-atoms';
-import { useState } from 'react';
-import Link from 'next/link';
 
 export const WidgetContactScreen = () => {
 	const setScreen = useSetAtom(screenAtom);

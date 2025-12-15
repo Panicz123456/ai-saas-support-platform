@@ -1,10 +1,12 @@
 'use client';
 
-import { BotIcon, PhoneIcon, SettingsIcon, UnplugIcon } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState } from 'react';
+import { BotIcon, PhoneIcon, SettingsIcon, UnplugIcon } from 'lucide-react';
+
 import { Button } from '@workspace/ui/components/button';
+import { VapiAssistantsTab } from '@/modules/plugins/ui/components/vapi-assistant-tab';
 import {
 	Card,
 	CardDescription,
@@ -17,8 +19,8 @@ import {
 	TabsList,
 	TabsTrigger,
 } from '@workspace/ui/components/tabs';
+
 import { VapiPhoneNumbersTab } from './vapi-phone-numbers-tab';
-import { VapiAssistantsTab } from '@/modules/plugins/ui/components/vapi-assistant-tab';
 
 interface VapiConnectedViewProps {
 	onDisconnect: () => void;

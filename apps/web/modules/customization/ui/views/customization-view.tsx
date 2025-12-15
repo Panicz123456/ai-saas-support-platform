@@ -1,8 +1,9 @@
 'use client';
 
-import { api } from '@workspace/backend/_generated/api';
 import { useQuery } from 'convex/react';
 import { Loader2Icon } from 'lucide-react';
+
+import { api } from '@workspace/backend/_generated/api';
 import { CustomizationForm } from '../components/customization-form';
 
 export const CustomizationView = () => {
