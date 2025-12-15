@@ -1,4 +1,5 @@
 import { UseFormReturn } from 'react-hook-form';
+
 import {
 	useVapiAssistants,
 	useVapiPhoneNumbers,
@@ -18,6 +19,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@workspace/ui/components/select';
+
 import { FormSchema } from '../../types';
 
 interface VapiFormFieldsProps {
@@ -88,7 +90,7 @@ export const VapiFormFields = ({ form }: VapiFormFieldsProps) => {
 								<SelectTrigger>
 									<SelectValue
 										placeholder={
-											assistantsLoading
+											phoneNumbersLoading
 												? 'Loading phone numbers...'
 												: 'Select a phone number'
 										}

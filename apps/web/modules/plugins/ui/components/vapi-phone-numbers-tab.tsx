@@ -1,6 +1,7 @@
 'use client';
 
 import { CheckCircleIcon, PhoneIcon, XCircleIcon } from 'lucide-react';
+
 import { Badge } from '@workspace/ui/components/badge';
 import {
 	Table,
@@ -10,6 +11,7 @@ import {
 	TableHeader,
 	TableRow,
 } from '@workspace/ui/components/table';
+
 import { useVapiPhoneNumbers } from '../../hooks/use-vapi-data';
 
 export const VapiPhoneNumbersTab = () => {

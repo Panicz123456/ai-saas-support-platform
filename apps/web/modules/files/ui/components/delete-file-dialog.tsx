@@ -1,8 +1,11 @@
 'use client';
 
-import { useMutation } from 'convex/react';
 import { useState } from 'react';
+import { useMutation } from 'convex/react';
+
+import { api } from '@workspace/backend/_generated/api';
 import { Button } from '@workspace/ui/components/button';
+import type { PublicFile } from '@workspace/backend/private/files';
 import {
 	Dialog,
 	DialogContent,
@@ -11,8 +14,6 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from '@workspace/ui/components/dialog';
-import { api } from '@workspace/backend/_generated/api';
-import type { PublicFile } from '@workspace/backend/private/files';
 
 interface DeleteFileDialogProps {
 	open: boolean;

@@ -1,6 +1,7 @@
 'use client';
 
 import { BotIcon } from 'lucide-react';
+
 import {
 	Table,
 	TableBody,
@@ -9,6 +10,7 @@ import {
 	TableHeader,
 	TableRow,
 } from '@workspace/ui/components/table';
+
 import { useVapiAssistants } from '../../hooks/use-vapi-data';
 
 export const VapiAssistantsTab = () => {

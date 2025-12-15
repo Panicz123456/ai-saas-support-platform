@@ -2,6 +2,7 @@
 
 import { useAtomValue } from 'jotai';
 import { AlertTriangleIcon } from 'lucide-react';
+
 import { errorMessageAtom } from '@/modules/widget/atoms/widget-atoms';
 import { WidgetHeader } from '@/modules/widget/ui/components/widget-header';
 

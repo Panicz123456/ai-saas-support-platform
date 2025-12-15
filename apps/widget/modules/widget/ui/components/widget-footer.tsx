@@ -1,8 +1,9 @@
-import { Button } from '@workspace/ui/components/button';
-import { cn } from '@workspace/ui/lib/utils';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { HomeIcon, InboxIcon } from 'lucide-react';
+
+import { cn } from '@workspace/ui/lib/utils';
 import { screenAtom } from '../../atoms/widget-atoms';
+import { Button } from '@workspace/ui/components/button';
 
 export const WidgetFooter = () => {
 	const screen = useAtomValue(screenAtom);

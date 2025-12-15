@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { OrganizationSwitcher, UserButton } from '@clerk/nextjs';
 import {
 	CreditCardIcon,
@@ -9,9 +11,8 @@ import {
 	Mic,
 	PaletteIcon,
 } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+
+import { cn } from '@workspace/ui/lib/utils';
 import {
 	Sidebar,
 	SidebarContent,
@@ -25,7 +26,6 @@ import {
 	SidebarMenuItem,
 	SidebarRail,
 } from '@workspace/ui/components/sidebar';
-import { cn } from '@workspace/ui/lib/utils';
 
 const customerSupportItems = [
 	{

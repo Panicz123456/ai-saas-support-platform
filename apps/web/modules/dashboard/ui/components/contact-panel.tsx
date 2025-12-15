@@ -1,22 +1,24 @@
 'use client';
 
 import Bowser from 'bowser';
+import Link from 'next/link';
+import { useMemo } from 'react';
+import { useParams } from 'next/navigation';
+import { useQuery } from 'convex/react';
+import { ClockIcon, GlobeIcon, MailIcon, MonitorIcon } from 'lucide-react';
+
+import { api } from '@workspace/backend/_generated/api';
+import { Button } from '@workspace/ui/components/button';
+import { Id } from '@workspace/backend/_generated/dataModel';
+import { DicebearAvatar } from '@workspace/ui/components/dicebear-avatar';
+import { getCountryFlagUrl, getCountryFromTimezone } from '@/lib/country-utils';
 import {
 	Accordion,
 	AccordionContent,
 	AccordionItem,
 	AccordionTrigger,
 } from '@workspace/ui/components/accordion';
-import { getCountryFlagUrl, getCountryFromTimezone } from '@/lib/country-utils';
-import { api } from '@workspace/backend/_generated/api';
-import { Id } from '@workspace/backend/_generated/dataModel';
-import { Button } from '@workspace/ui/components/button';
-import { DicebearAvatar } from '@workspace/ui/components/dicebear-avatar';
-import { useQuery } from 'convex/react';
-import { ClockIcon, GlobeIcon, MailIcon, MonitorIcon } from 'lucide-react';
-import Link from 'next/link';
-import { useParams } from 'next/navigation';
-import { useMemo } from 'react';
+
 
 type InfoItem = {
 	label: string;

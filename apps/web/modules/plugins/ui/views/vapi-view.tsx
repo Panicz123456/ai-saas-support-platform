@@ -1,15 +1,23 @@
 'use client';
 
+import { z } from 'zod';
+import { toast } from 'sonner';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useMutation, useQuery } from 'convex/react';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
 	GlobeIcon,
 	PhoneCallIcon,
 	PhoneIcon,
 	WorkflowIcon,
 } from 'lucide-react';
-import { type Feature, PluginCard } from '../components/plugin-card';
-import { useMutation, useQuery } from 'convex/react';
+
+import { Input } from '@workspace/ui/components/input';
+import { Label } from '@workspace/ui/components/label';
 import { api } from '@workspace/backend/_generated/api';
-import { useState } from 'react';
+import { Button } from '@workspace/ui/components/button';
+import { type Feature, PluginCard } from '../components/plugin-card';
 import {
 	Dialog,
 	DialogContent,
@@ -25,13 +33,7 @@ import {
 	FormItem,
 	FormMessage,
 } from '@workspace/ui/components/form';
-import { Input } from '@workspace/ui/components/input';
-import { Label } from '@workspace/ui/components/label';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { toast } from 'sonner';
-import { Button } from '@workspace/ui/components/button';
+
 import { VapiConnectedView } from '../components/vapi-connected-view';
 
 const vapiFeatures: Feature[] = [

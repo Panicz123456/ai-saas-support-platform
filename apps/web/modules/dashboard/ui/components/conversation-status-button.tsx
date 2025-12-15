@@ -1,20 +1,9 @@
 'use client';
 
-import { useInfiniteScroll } from '@workspace/ui/hooks/use-infinite-scroll';
-import { InfiniteScrollTrigger } from '@workspace/ui/components/infinite-scroll-trigger';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { formatDistanceToNow } from 'date-fns';
-import { getCountryFlagUrl, getCountryFromTimezone } from '@/lib/country-utils';
-import { api } from '@workspace/backend/_generated/api';
-import { DicebearAvatar } from '@workspace/ui/components/dicebear-avatar';
-import { ScrollArea } from '@workspace/ui/components/scroll-area';
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from '@workspace/ui/components/select';
-import { cn } from '@workspace/ui/lib/utils';
+import { useAtomValue, useSetAtom } from 'jotai/react';
 import { usePaginatedQuery } from 'convex/react';
 import {
 	ListIcon,
@@ -23,12 +12,25 @@ import {
 	CheckIcon,
 	CornerUpLeftIcon,
 } from 'lucide-react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { ConversationStatusIcon } from '@workspace/ui/components/conversation-status-icon';
-import { useAtomValue, useSetAtom } from 'jotai/react';
-import { statusFilterAtom } from '../../atoms';
+
+import { cn } from '@workspace/ui/lib/utils';
+import { api } from '@workspace/backend/_generated/api';
 import { Skeleton } from '@workspace/ui/components/skeleton';
+import { ScrollArea } from '@workspace/ui/components/scroll-area';
+import { DicebearAvatar } from '@workspace/ui/components/dicebear-avatar';
+import { useInfiniteScroll } from '@workspace/ui/hooks/use-infinite-scroll';
+import { getCountryFlagUrl, getCountryFromTimezone } from '@/lib/country-utils';
+import { InfiniteScrollTrigger } from '@workspace/ui/components/infinite-scroll-trigger';
+import { ConversationStatusIcon } from '@workspace/ui/components/conversation-status-icon';
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '@workspace/ui/components/select';
+
+import { statusFilterAtom } from '../../atoms';
 
 export const ConversationsPanel = () => {
 	const pathname = usePathname();

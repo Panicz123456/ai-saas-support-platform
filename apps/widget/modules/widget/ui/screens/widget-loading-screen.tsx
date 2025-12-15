@@ -3,6 +3,10 @@
 import { useEffect, useState } from 'react';
 import { LoaderIcon } from 'lucide-react';
 import { useAtomValue, useSetAtom } from 'jotai';
+import { useAction, useMutation, useQuery } from 'convex/react';
+
+import { api } from '@workspace/backend/_generated/api';
+import { WidgetHeader } from '@/modules/widget/ui/components/widget-header';
 import {
 	contactSessionIdAtomFamily,
 	errorMessageAtom,
@@ -12,9 +16,6 @@ import {
 	vapiSecretsAtom,
 	widgetSettingsAtom,
 } from '@/modules/widget/atoms/widget-atoms';
-import { WidgetHeader } from '@/modules/widget/ui/components/widget-header';
-import { useAction, useMutation, useQuery } from 'convex/react';
-import { api } from '@workspace/backend/_generated/api';
 
 type InitStep = 'org' | 'session' | 'settings' | 'vapi' | 'done';
 
@@ -162,6 +163,8 @@ export const WidgetLoadingScreen = ({
 		setVapiSecrets,
 		setLoadingMessage,
 		setStep,
+		setErrorMessage,
+		setScreen
 	]);
 
 	useEffect(() => {

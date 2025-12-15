@@ -1,13 +1,25 @@
 'use client';
 
+import { z } from 'zod';
+import { toast } from 'sonner';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { MoreHorizontalIcon, Wand2Icon } from 'lucide-react';
+import { useAction, useMutation, useQuery } from 'convex/react';
+import { toUIMessages, useThreadMessages } from '@convex-dev/agent/react';
+
+import { cn } from '@workspace/ui/lib/utils';
+import { api } from '@workspace/backend/_generated/api';
+import { Button } from '@workspace/ui/components/button';
+import { Skeleton } from '@workspace/ui/components/skeleton';
+import { Id } from '@workspace/backend/_generated/dataModel';
+import { Form, FormField } from '@workspace/ui/components/form';
+import { AIResponse } from '@workspace/ui/components/ai/response';
 import { useInfiniteScroll } from '@workspace/ui/hooks/use-infinite-scroll';
 import { InfiniteScrollTrigger } from '@workspace/ui/components/infinite-scroll-trigger';
-import { toUIMessages, useThreadMessages } from '@convex-dev/agent/react';
-import { api } from '@workspace/backend/_generated/api';
-import { Id } from '@workspace/backend/_generated/dataModel';
-import { Button } from '@workspace/ui/components/button';
-import { useAction, useMutation, useQuery } from 'convex/react';
-import { MoreHorizontalIcon, Wand2Icon } from 'lucide-react';
+import { DicebearAvatar } from '@workspace/ui/components/dicebear-avatar';
+import { ConversationStatusButton } from '@/modules/dashboard/ui/components/conversation-panel';
 import {
 	AIConversation,
 	AIConversationContent,
@@ -25,17 +37,6 @@ import {
 	AIMessage,
 	AIMessageContent,
 } from '@workspace/ui/components/ai/message';
-import { AIResponse } from '@workspace/ui/components/ai/response';
-import { Form, FormField } from '@workspace/ui/components/form';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { DicebearAvatar } from '@workspace/ui/components/dicebear-avatar';
-import { useState } from 'react';
-import { cn } from '@workspace/ui/lib/utils';
-import { Skeleton } from '@workspace/ui/components/skeleton';
-import { toast } from 'sonner';
-import { ConversationStatusButton } from '@/modules/dashboard/ui/components/conversation-panel';
 
 const formSchema = z.object({
 	message: z.string().min(1, 'Message is required'),
