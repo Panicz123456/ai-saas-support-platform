@@ -1,7 +1,7 @@
-import { OrganizationList } from "@clerk/nextjs"
+import { OrganizationList } from '@clerk/nextjs';
 
-export const OrgSelectorView = () => { 
-  return (
+export const OrgSelectionView = () => {
+	return (
 		<OrganizationList
 			afterCreateOrganizationUrl="/"
 			afterSelectOrganizationUrl="/"
@@ -9,4 +9,4 @@ export const OrgSelectorView = () => {
 			skipInvitationScreen
 		/>
 	);
-}
+};

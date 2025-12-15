@@ -1,15 +1,14 @@
 'use client';
 
-import { useState } from 'react';
-import { useMutation } from 'convex/react';
-import { useAtomValue, useSetAtom } from 'jotai';
-import { ChevronRightIcon, MessageSquareTextIcon, MicIcon, PhoneIcon } from 'lucide-react';
-
-import { api } from '@workspace/backend/_generated/api';
-import { Button } from '@workspace/ui/components/button';
-
 import { WidgetHeader } from '@/modules/widget/ui/components/widget-header';
-import { WidgetFooter } from '@/modules/widget/ui/components/widget-footer';
+import { Button } from '@workspace/ui/components/button';
+import { useAtomValue, useSetAtom } from 'jotai';
+import {
+	ChevronRightIcon,
+	MessageSquareTextIcon,
+	MicIcon,
+	PhoneIcon,
+} from 'lucide-react';
 import {
 	contactSessionIdAtomFamily,
 	conversationIdAtom,
@@ -18,7 +17,11 @@ import {
 	organizationIdAtom,
 	screenAtom,
 	widgetSettingsAtom,
-} from '@/modules/widget/atoms/widget-atoms';
+} from '../../atoms/widget-atoms';
+import { useMutation } from 'convex/react';
+import { api } from '@workspace/backend/_generated/api';
+import { useState } from 'react';
+import { WidgetFooter } from '../components/widget-footer';
 
 export const WidgetSelectionScreen = () => {
 	const setScreen = useSetAtom(screenAtom);
@@ -32,18 +35,18 @@ export const WidgetSelectionScreen = () => {
 		contactSessionIdAtomFamily(organizationId || '')
 	);
 
-	const createConversation = useMutation(api.public.conversation.create);
+	const createConversation = useMutation(api.public.conversations.create);
 	const [isPending, setIsPending] = useState(false);
 
 	const handleNewConversation = async () => {
-		if (!contactSessionId) {
-			setScreen('auth');
+		if (!organizationId) {
+			setScreen('error');
+			setErrorMessage('Missing Organization ID');
 			return;
 		}
 
-		if (!organizationId) {
-			setScreen('error');
-			setErrorMessage('Organization not found');
+		if (!contactSessionId) {
+			setScreen('auth');
 			return;
 		}
 
@@ -80,36 +83,36 @@ export const WidgetSelectionScreen = () => {
 				>
 					<div className="flex items-center gap-x-2">
 						<MessageSquareTextIcon className="size-4" />
-						<span>Start Chat</span>
+						<span>Start chat</span>
 					</div>
-					<ChevronRightIcon className="size-4" />
+					<ChevronRightIcon />
 				</Button>
-				{hasVapiSecrets && widgetSettings?.vapiSettings.assistantId && (
+				{hasVapiSecrets && widgetSettings?.vapiSettings?.assistantId && (
 					<Button
 						className="h-16 w-full justify-between"
 						variant="outline"
-						onClick={() => setScreen("voice")}
+						onClick={() => setScreen('voice')}
 						disabled={isPending}
 					>
 						<div className="flex items-center gap-x-2">
 							<MicIcon className="size-4" />
 							<span>Start voice call</span>
 						</div>
-						<ChevronRightIcon className="size-4" />
+						<ChevronRightIcon />
 					</Button>
 				)}
-				{hasVapiSecrets && widgetSettings?.vapiSettings.phoneNumber && (
+				{hasVapiSecrets && widgetSettings?.vapiSettings?.phoneNumber && (
 					<Button
 						className="h-16 w-full justify-between"
 						variant="outline"
-						onClick={() => setScreen("contact")}
+						onClick={() => setScreen('contact')}
 						disabled={isPending}
 					>
 						<div className="flex items-center gap-x-2">
 							<PhoneIcon className="size-4" />
 							<span>Call us</span>
 						</div>
-						<ChevronRightIcon className="size-4" />
+						<ChevronRightIcon />
 					</Button>
 				)}
 			</div>

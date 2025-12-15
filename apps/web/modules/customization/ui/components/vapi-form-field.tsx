@@ -1,8 +1,6 @@
 import { UseFormReturn } from 'react-hook-form';
-
-import type { widgetSettingsSchemaType } from '@/modules/customization/schema';
 import {
-	useVapiAssistant,
+	useVapiAssistants,
 	useVapiPhoneNumbers,
 } from '@/modules/plugins/hooks/use-vapi-data';
 import {
@@ -11,6 +9,7 @@ import {
 	FormField,
 	FormItem,
 	FormLabel,
+	FormMessage,
 } from '@workspace/ui/components/form';
 import {
 	Select,
@@ -19,15 +18,19 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@workspace/ui/components/select';
+import { FormSchema } from '../../types';
 
 interface VapiFormFieldsProps {
-	form: UseFormReturn<widgetSettingsSchemaType>;
+	form: UseFormReturn<FormSchema>;
 }
 
-export const VapiFormField = ({ form }: VapiFormFieldsProps) => {
-	const { data: assistant, isLoading: assistantLoading } = useVapiAssistant();
+export const VapiFormFields = ({ form }: VapiFormFieldsProps) => {
+	const { data: assistants, isLoading: assistantsLoading } =
+		useVapiAssistants();
 	const { data: phoneNumbers, isLoading: phoneNumbersLoading } =
 		useVapiPhoneNumbers();
+
+	const disabled = form.formState.isSubmitting;
 
 	return (
 		<>
@@ -38,7 +41,7 @@ export const VapiFormField = ({ form }: VapiFormFieldsProps) => {
 					<FormItem>
 						<FormLabel>Voice Assistant</FormLabel>
 						<Select
-							disabled={assistantLoading || form.formState.isSubmitting}
+							disabled={assistantsLoading || disabled}
 							onValueChange={field.onChange}
 							value={field.value}
 						>
@@ -46,7 +49,7 @@ export const VapiFormField = ({ form }: VapiFormFieldsProps) => {
 								<SelectTrigger>
 									<SelectValue
 										placeholder={
-											assistantLoading
+											assistantsLoading
 												? 'Loading assistants...'
 												: 'Select an assistant'
 										}
@@ -55,7 +58,7 @@ export const VapiFormField = ({ form }: VapiFormFieldsProps) => {
 							</FormControl>
 							<SelectContent>
 								<SelectItem value="none">None</SelectItem>
-								{assistant.map((assistant) => (
+								{assistants.map((assistant) => (
 									<SelectItem key={assistant.id} value={assistant.id}>
 										{assistant.name || 'Unnamed Assistant'} -{' '}
 										{assistant.model?.model || 'Unknown model'}
@@ -66,6 +69,7 @@ export const VapiFormField = ({ form }: VapiFormFieldsProps) => {
 						<FormDescription>
 							The Vapi assistant to use for voice calls
 						</FormDescription>
+						<FormMessage />
 					</FormItem>
 				)}
 			/>
@@ -76,7 +80,7 @@ export const VapiFormField = ({ form }: VapiFormFieldsProps) => {
 					<FormItem>
 						<FormLabel>Display Phone Number</FormLabel>
 						<Select
-							disabled={phoneNumbersLoading || form.formState.isSubmitting}
+							disabled={phoneNumbersLoading || disabled}
 							onValueChange={field.onChange}
 							value={field.value}
 						>
@@ -84,26 +88,26 @@ export const VapiFormField = ({ form }: VapiFormFieldsProps) => {
 								<SelectTrigger>
 									<SelectValue
 										placeholder={
-											assistantLoading
-												? 'Loading phones numbers...'
-												: 'Select an phone number'
+											assistantsLoading
+												? 'Loading phone numbers...'
+												: 'Select a phone number'
 										}
 									/>
 								</SelectTrigger>
 							</FormControl>
 							<SelectContent>
 								<SelectItem value="none">None</SelectItem>
-								{phoneNumbers.map((phoneNumber) => (
-									<SelectItem key={phoneNumber.id} value={phoneNumber.id}>
-										{phoneNumber.name || 'Unnamed Assistant'} -{' '}
-										{phoneNumber.number || 'Unknown model'}
+								{phoneNumbers.map((phone) => (
+									<SelectItem key={phone.id} value={phone.number || phone.id}>
+										{phone.number || 'Unknown'} - {phone.name || 'Unnamed'}
 									</SelectItem>
 								))}
 							</SelectContent>
 						</Select>
-            <FormDescription>
-              Phone number to display in widget
+						<FormDescription>
+							Phone number to display in the widget
 						</FormDescription>
+						<FormMessage />
 					</FormItem>
 				)}
 			/>

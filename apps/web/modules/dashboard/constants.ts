@@ -1,1 +1,1 @@
-export const STATUS_FILTER_KEY = "status-filter"
+export const STATUS_FILTER_KEY = 'echo-status-filter';

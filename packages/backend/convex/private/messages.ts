@@ -52,7 +52,7 @@ export const enhanceResponse = action({
 export const create = mutation({
 	args: {
 		prompt: v.string(),
-		conversationId: v.id('conversation'),
+		conversationId: v.id('conversations'),
 	},
 	handler: async (ctx, args) => {
 		const identity = await ctx.auth.getUserIdentity();
@@ -139,7 +139,7 @@ export const getMany = query({
 		}
 
 		const conversation = await ctx.db
-			.query('conversation')
+			.query('conversations')
 			.withIndex('by_thread_id', (q) => q.eq('threadId', args.threadId))
 			.unique();
 

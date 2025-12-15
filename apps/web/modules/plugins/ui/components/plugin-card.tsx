@@ -1,6 +1,6 @@
-import { Button } from '@workspace/ui/components/button';
 import { ArrowLeftRightIcon, type LucideIcon, PlugIcon } from 'lucide-react';
 import Image from 'next/image';
+import { Button } from '@workspace/ui/components/button';
 
 export interface Feature {
 	icon: LucideIcon;
@@ -9,11 +9,11 @@ export interface Feature {
 }
 
 interface PluginCardProps {
+	isDisabled?: boolean;
 	serviceName: string;
 	serviceImage: string;
 	features: Feature[];
 	onSubmit: () => void;
-	isDisabled?: boolean;
 }
 
 export const PluginCard = ({
@@ -39,10 +39,11 @@ export const PluginCard = ({
 				<div className="flex flex-col items-center gap-1">
 					<ArrowLeftRightIcon />
 				</div>
+
 				<div className="flex flex-col items-center">
 					<Image
 						alt="Platform"
-						className="rounded object-contain"
+						className="object-contain"
 						height={40}
 						width={40}
 						src="/logo.svg"
@@ -73,15 +74,15 @@ export const PluginCard = ({
 			</div>
 
 			<div className="text-center">
-        <Button
-          className='size-full'
-          disabled={isDisabled}
-          onClick={onSubmit}
-          variant="default"
-        >
-          Connect
-          <PlugIcon />
-        </Button>
+				<Button
+					className="size-full"
+					disabled={isDisabled}
+					onClick={onSubmit}
+					variant="default"
+				>
+					Connect
+					<PlugIcon />
+				</Button>
 			</div>
 		</div>
 	);

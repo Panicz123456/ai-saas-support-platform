@@ -1,6 +1,7 @@
 'use client';
 
-import { useVapiPhoneNumbers } from '@/modules/plugins/hooks/use-vapi-data';
+import { CheckCircleIcon, PhoneIcon, XCircleIcon } from 'lucide-react';
+import { Badge } from '@workspace/ui/components/badge';
 import {
 	Table,
 	TableBody,
@@ -9,8 +10,7 @@ import {
 	TableHeader,
 	TableRow,
 } from '@workspace/ui/components/table';
-import { CheckCircleIcon, PhoneIcon, XCircleIcon } from 'lucide-react';
-import { Badge } from '@workspace/ui/components/badge';
+import { useVapiPhoneNumbers } from '../../hooks/use-vapi-data';
 
 export const VapiPhoneNumbersTab = () => {
 	const { data: phoneNumbers, isLoading } = useVapiPhoneNumbers();
@@ -23,7 +23,6 @@ export const VapiPhoneNumbersTab = () => {
 						<TableHead className="px-6 py-4">Phone Number</TableHead>
 						<TableHead className="px-6 py-4">Name</TableHead>
 						<TableHead className="px-6 py-4">Status</TableHead>
-						<TableHead className="px-6 py-4 text-right">Actions</TableHead>
 					</TableRow>
 				</TableHeader>
 				<TableBody>
@@ -32,7 +31,7 @@ export const VapiPhoneNumbersTab = () => {
 							return (
 								<TableRow>
 									<TableCell
-										colSpan={4}
+										colSpan={3}
 										className="px-6 py-8 text-center text-muted-foreground"
 									>
 										Loading phone numbers...
@@ -45,7 +44,7 @@ export const VapiPhoneNumbersTab = () => {
 							return (
 								<TableRow>
 									<TableCell
-										colSpan={4}
+										colSpan={3}
 										className="px-6 py-8 text-center text-muted-foreground"
 									>
 										No phone numbers configured
@@ -53,8 +52,9 @@ export const VapiPhoneNumbersTab = () => {
 								</TableRow>
 							);
 						}
+
 						return phoneNumbers.map((phone) => (
-							<TableRow key={phone.id} className="hover:bg-muted/50">
+							<TableRow className="hover:bg-muted/50" key={phone.id}>
 								<TableCell className="px-6 py-4">
 									<div className="flex items-center gap-3">
 										<PhoneIcon className="size-4 text-muted-foreground" />

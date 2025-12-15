@@ -2,7 +2,7 @@
 
 import { useOrganization } from '@clerk/nextjs';
 import { AuthLayout } from '@/modules/auth/ui/layouts/auth-layout';
-import { OrgSelectorView } from '@/modules/auth/ui/views/org-selector-view';
+import { OrgSelectionView } from '@/modules/auth/ui/views/org-selection-view';
 
 export const OrganizationGuard = ({
 	children,
@@ -14,7 +14,7 @@ export const OrganizationGuard = ({
 	if (!organization) {
 		return (
 			<AuthLayout>
-				<OrgSelectorView />
+				<OrgSelectionView />
 			</AuthLayout>
 		);
 	}

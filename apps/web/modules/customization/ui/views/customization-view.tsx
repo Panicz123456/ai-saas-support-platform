@@ -9,8 +9,9 @@ export const CustomizationView = () => {
 	const widgetSettings = useQuery(api.private.widgetSettings.getOne);
 	const vapiPlugin = useQuery(api.private.plugins.getOne, { service: 'vapi' });
 
+	const isLoading = widgetSettings === undefined || vapiPlugin === undefined;
 
-	if (widgetSettings === undefined || vapiPlugin === undefined) {
+	if (isLoading) {
 		return (
 			<div className="min-h-screen flex flex-col items-center justify-center gap-y-2 bg-muted p-8">
 				<Loader2Icon className="text-muted-foreground animate-spin" />

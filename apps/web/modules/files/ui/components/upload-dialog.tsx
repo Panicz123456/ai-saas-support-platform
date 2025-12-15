@@ -1,12 +1,7 @@
 'use client';
 
-import { useState } from 'react';
 import { useAction } from 'convex/react';
-
-import { Label } from '@workspace/ui/components/label';
-import { Input } from '@workspace/ui/components/input';
-import { api } from '@workspace/backend/_generated/api';
-import { Button } from '@workspace/ui/components/button';
+import { useState } from 'react';
 import {
 	Dialog,
 	DialogContent,
@@ -15,11 +10,15 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from '@workspace/ui/components/dialog';
+import { Input } from '@workspace/ui/components/input';
+import { Label } from '@workspace/ui/components/label';
+import { Button } from '@workspace/ui/components/button';
 import {
 	Dropzone,
 	DropzoneContent,
 	DropzoneEmptyState,
 } from '@workspace/ui/components/dropzone';
+import { api } from '@workspace/backend/_generated/api';
 
 interface UploadDialogProps {
 	open: boolean;
@@ -41,8 +40,8 @@ export const UploadDialog = ({
 		filename: '',
 	});
 
-	const handleFileDrop = (acceptedFile: File[]) => {
-		const file = acceptedFile[0];
+	const handleFileDrop = (acceptedFiles: File[]) => {
+		const file = acceptedFiles[0];
 
 		if (file) {
 			setUploadedFiles([file]);
@@ -50,43 +49,43 @@ export const UploadDialog = ({
 				setUploadForm((prev) => ({ ...prev, filename: file.name }));
 			}
 		}
-  };
-  
-  const handleUpload = async () => { 
-    setIsUploading(true)
-    try {
-      const blob = uploadedFiles[0]
+	};
 
-      if (!blob) { 
-        return;
-      }
+	const handleUpload = async () => {
+		setIsUploading(true);
+		try {
+			const blob = uploadedFiles[0];
 
-      const filename = uploadForm.filename || blob.name;
+			if (!blob) {
+				return;
+			}
 
-      await addFile({ 
-        bytes: await blob.arrayBuffer(),
-        filename,
-        mimeType: blob.type || "text/plain",
-        category: uploadForm.category,
-      })
+			const filename = uploadForm.filename || blob.name;
 
-      onFileUploaded?.()
-      handleCancel()
-    } catch (error) {
-      console.error(error)
-    } finally {
-      setIsUploading(false)
-    }
-  }
+			await addFile({
+				bytes: await blob.arrayBuffer(),
+				filename,
+				mimeType: blob.type || 'text/plain',
+				category: uploadForm.category,
+			});
 
-  const handleCancel = () => { 
-    onOpenChange(false)
-    setUploadedFiles([])
-    setUploadForm({ 
-      category: "",
-      filename: ""
-    })
-  }
+			onFileUploaded?.();
+			handleCancel();
+		} catch (error) {
+			console.error(error);
+		} finally {
+			setIsUploading(false);
+		}
+	};
+
+	const handleCancel = () => {
+		onOpenChange(false);
+		setUploadedFiles([]);
+		setUploadForm({
+			category: '',
+			filename: '',
+		});
+	};
 
 	return (
 		<Dialog onOpenChange={onOpenChange} open={open}>
@@ -94,7 +93,8 @@ export const UploadDialog = ({
 				<DialogHeader>
 					<DialogTitle>Upload Document</DialogTitle>
 					<DialogDescription>
-						Upload a document to your knowledge base
+						Upload documents to your knowledge base for AI-powered search and
+						retrieval
 					</DialogDescription>
 				</DialogHeader>
 
@@ -105,25 +105,32 @@ export const UploadDialog = ({
 							className="w-full"
 							id="category"
 							onChange={(e) =>
-								setUploadForm((prev) => ({ ...prev, category: e.target.value }))
+								setUploadForm((prev) => ({
+									...prev,
+									category: e.target.value,
+								}))
 							}
-							placeholder="e.g., Documentation, Support"
+							placeholder="e.g., Documentation, Support, Product"
 							type="text"
 							value={uploadForm.category}
 						/>
 					</div>
+
 					<div className="space-y-2">
 						<Label htmlFor="filename">
-							Filenname{' '}
+							Filename{' '}
 							<span className="text-muted-foreground text-xs">(optional)</span>
 						</Label>
 						<Input
 							className="w-full"
 							id="filename"
 							onChange={(e) =>
-								setUploadForm((prev) => ({ ...prev, filename: e.target.value }))
+								setUploadForm((prev) => ({
+									...prev,
+									filename: e.target.value,
+								}))
 							}
-							placeholder="Override filename"
+							placeholder="Override default filename"
 							type="text"
 							value={uploadForm.filename}
 						/>
@@ -146,18 +153,20 @@ export const UploadDialog = ({
 				</div>
 
 				<DialogFooter>
-          <Button
-            variant="outline"
-            onClick={handleCancel}
-            disabled={isUploading}
-          >
+					<Button
+						disabled={isUploading}
+						onClick={handleCancel}
+						variant="outline"
+					>
 						Cancel
 					</Button>
-          <Button
-            onClick={handleUpload}
-            disabled={uploadedFiles.length === 0 || isUploading || !uploadForm.category}
-          >
-						{isUploading ? "Uploading..." : "Upload"}
+					<Button
+						onClick={handleUpload}
+						disabled={
+							uploadedFiles.length === 0 || isUploading || !uploadForm.category
+						}
+					>
+						{isUploading ? 'Uploading...' : 'Upload'}
 					</Button>
 				</DialogFooter>
 			</DialogContent>

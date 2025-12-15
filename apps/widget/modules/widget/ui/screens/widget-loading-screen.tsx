@@ -39,7 +39,7 @@ export const WidgetLoadingScreen = ({
 	);
 
 	// Step 1: Validate organization
-	const validateOrganization = useAction(api.public.organization.validate);
+	const validateOrganization = useAction(api.public.organizations.validate);
 	useEffect(() => {
 		if (step !== 'org') {
 			return;
@@ -162,8 +162,6 @@ export const WidgetLoadingScreen = ({
 		setVapiSecrets,
 		setLoadingMessage,
 		setStep,
-		setErrorMessage,
-		setScreen
 	]);
 
 	useEffect(() => {

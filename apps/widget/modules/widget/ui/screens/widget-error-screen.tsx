@@ -2,7 +2,6 @@
 
 import { useAtomValue } from 'jotai';
 import { AlertTriangleIcon } from 'lucide-react';
-
 import { errorMessageAtom } from '@/modules/widget/atoms/widget-atoms';
 import { WidgetHeader } from '@/modules/widget/ui/components/widget-header';
 
@@ -18,9 +17,7 @@ export const WidgetErrorScreen = () => {
 				</div>
 			</WidgetHeader>
 			<div className="flex flex-1 flex-col items-center justify-center gap-y-4 p-4 text-muted-foreground">
-				<div className="rounded-full bg-red-100 size-20 flex items-center justify-center">
-					<AlertTriangleIcon size={50} className="stroke-red-500" />
-				</div>
+				<AlertTriangleIcon />
 				<p className="text-sm">{errorMessage || 'Invalid configuration'}</p>
 			</div>
 		</>

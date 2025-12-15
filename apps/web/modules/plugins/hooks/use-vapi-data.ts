@@ -6,7 +6,7 @@ import { api } from '@workspace/backend/_generated/api';
 type PhoneNumbers = typeof api.private.vapi.getPhoneNumbers._returnType;
 type Assistants = typeof api.private.vapi.getAssistants._returnType;
 
-export const useVapiAssistant = (): {
+export const useVapiAssistants = (): {
 	data: Assistants;
 	isLoading: boolean;
 	error: Error | null;
@@ -93,7 +93,7 @@ export const useVapiPhoneNumbers = (): {
 		return () => {
 			cancelled = true;
 		};
-	}, [getPhoneNumbers]);
+	}, []);
 
 	return { data, isLoading, error };
 };

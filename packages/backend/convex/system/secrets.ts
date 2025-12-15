@@ -1,7 +1,7 @@
 import { v } from 'convex/values';
+import { internal } from '../_generated/api';
 import { internalAction } from '../_generated/server';
 import { upsertSecret } from '../lib/secrets';
-import { internal } from '../_generated/api';
 
 export const upsert = internalAction({
 	args: {
@@ -14,11 +14,11 @@ export const upsert = internalAction({
 
 		await upsertSecret(secretName, args.value);
 
-    await ctx.runMutation(internal.system.plugins.upsert, { 
-      service: args.service,
-      secretName,
-      organizationId: args.organizationId
-    })
+		await ctx.runMutation(internal.system.plugins.upsert, {
+			service: args.service,
+			secretName,
+			organizationId: args.organizationId,
+		});
 
 		return { status: 'success' };
 	},

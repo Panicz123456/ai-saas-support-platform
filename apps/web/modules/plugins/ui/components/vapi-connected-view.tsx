@@ -1,10 +1,9 @@
 'use client';
 
-import Link from 'next/link';
-import Image from 'next/image';
-import { useState } from 'react';
 import { BotIcon, PhoneIcon, SettingsIcon, UnplugIcon } from 'lucide-react';
-
+import Image from 'next/image';
+import Link from 'next/link';
+import { useState } from 'react';
 import { Button } from '@workspace/ui/components/button';
 import {
 	Card,
@@ -18,8 +17,8 @@ import {
 	TabsList,
 	TabsTrigger,
 } from '@workspace/ui/components/tabs';
-import { VapiPhoneNumbersTab } from '@/modules/plugins/ui/components/vapi-phone-numbers-tab';
-import { VapiAssistantTab } from '@/modules/plugins/ui/components/vapi-assistant-tab';
+import { VapiPhoneNumbersTab } from './vapi-phone-numbers-tab';
+import { VapiAssistantsTab } from '@/modules/plugins/ui/components/vapi-assistant-tab';
 
 interface VapiConnectedViewProps {
 	onDisconnect: () => void;
@@ -65,9 +64,9 @@ export const VapiConnectedView = ({ onDisconnect }: VapiConnectedViewProps) => {
 								<SettingsIcon className="size-6 text-muted-foreground" />
 							</div>
 							<div>
-								<CardTitle>Widget Configuration </CardTitle>
+								<CardTitle>Widget Configuration</CardTitle>
 								<CardDescription>
-									Set up voice call for your chat widget
+									Set up voice calls for your chat widget
 								</CardDescription>
 							</div>
 						</div>
@@ -102,7 +101,7 @@ export const VapiConnectedView = ({ onDisconnect }: VapiConnectedViewProps) => {
 						<VapiPhoneNumbersTab />
 					</TabsContent>
 					<TabsContent value="assistants">
-						<VapiAssistantTab />
+						<VapiAssistantsTab />
 					</TabsContent>
 				</Tabs>
 			</div>

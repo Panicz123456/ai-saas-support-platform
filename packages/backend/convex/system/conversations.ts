@@ -7,7 +7,7 @@ export const escalate = internalMutation({
 	},
 	handler: async (ctx, args) => {
 		const conversation = await ctx.db
-			.query('conversation')
+			.query('conversations')
 			.withIndex('by_thread_id', (q) => q.eq('threadId', args.threadId))
 			.unique();
 
@@ -18,9 +18,7 @@ export const escalate = internalMutation({
 			});
 		}
 
-		await ctx.db.patch(conversation._id, {
-			status: 'escalated',
-		});
+		await ctx.db.patch(conversation._id, { status: 'escalated' });
 	},
 });
 
@@ -30,7 +28,7 @@ export const resolve = internalMutation({
 	},
 	handler: async (ctx, args) => {
 		const conversation = await ctx.db
-			.query('conversation')
+			.query('conversations')
 			.withIndex('by_thread_id', (q) => q.eq('threadId', args.threadId))
 			.unique();
 
@@ -41,9 +39,7 @@ export const resolve = internalMutation({
 			});
 		}
 
-		await ctx.db.patch(conversation._id, {
-			status: 'resolved',
-		});
+		await ctx.db.patch(conversation._id, { status: 'resolved' });
 	},
 });
 
@@ -53,7 +49,7 @@ export const getByThreadId = internalQuery({
 	},
 	handler: async (ctx, args) => {
 		const conversation = await ctx.db
-			.query('conversation')
+			.query('conversations')
 			.withIndex('by_thread_id', (q) => q.eq('threadId', args.threadId))
 			.unique();
 
