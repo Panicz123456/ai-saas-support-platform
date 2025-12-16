@@ -110,6 +110,20 @@ export const addFile = action({
 			});
 		}
 
+		const subscription = await ctx.runQuery(
+			internal.system.subscriptions.getByOrganizationId,
+			{
+				organizationId: orgId,
+			}
+		);
+
+		if (subscription?.status !== 'active') {
+			throw new ConvexError({
+				code: 'BAD_REQUEST',
+				message: 'Subscription is not active',
+			});
+		}
+
 		const { bytes, filename, category } = args;
 
 		const mimeType = args.mimeType || guessMimeType(filename, bytes);
