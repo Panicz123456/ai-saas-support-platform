@@ -1,9 +1,10 @@
+import { ConvexError, v } from 'convex/values';
+import { paginationOptsValidator } from 'convex/server';
+import { MessageDoc, saveMessage } from '@convex-dev/agent';
+
 import { mutation, query } from '../_generated/server';
 import { components, internal } from '../_generated/api';
-import { ConvexError, v } from 'convex/values';
 import { supportAgent } from '../system/ai/agents/supportAgent';
-import { MessageDoc, saveMessage } from '@convex-dev/agent';
-import { paginationOptsValidator } from 'convex/server';
 
 export const getMany = query({
 	args: {
@@ -112,6 +113,10 @@ export const create = mutation({
 				message: 'Invalid session',
 			});
 		}
+
+		await ctx.runMutation(internal.system.contactSessions.refresh, {
+			contactSessionId: args.contactSessionId,
+		});
 
 		const widgetSettings = await ctx.db
 			.query('widgetSettings')
