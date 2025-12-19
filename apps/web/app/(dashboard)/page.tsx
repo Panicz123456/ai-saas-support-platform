@@ -1,7 +1,8 @@
 'use client';
 
-import { OrganizationSwitcher, UserButton } from '@clerk/nextjs';
 import { useMutation } from 'convex/react';
+import { OrganizationSwitcher, UserButton } from '@clerk/nextjs';
+
 import { api } from '@workspace/backend/_generated/api';
 import { Button } from '@workspace/ui/components/button';
 
